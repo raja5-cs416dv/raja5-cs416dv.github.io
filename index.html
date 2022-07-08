@@ -1,1 +1,22 @@
+<<<<<<< Updated upstream
 Hello World!!!
+=======
+<html>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <style>
+    circle {
+      fill: lightblue;
+      stroke: black;
+    }
+  </style>
+
+  <body onload="init()">
+    <script>
+      async function init() {
+        data = await d3.csv("./test.csv");
+        console.log(data);
+      }
+    </script>
+  </body>
+</html>
+>>>>>>> Stashed changes
