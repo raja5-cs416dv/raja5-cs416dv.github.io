@@ -22,7 +22,7 @@
   <body onload="init()">
     <div class="w3-row">
       <div class="w3-container w3-blue">
-        <h2>Customer Analysis</h2>
+        <h2>Superstore - Customer Analysis</h2>
       </div>
     </div>
 
@@ -492,28 +492,36 @@
           .attr("transform", `translate(${margin.left}, ${margin.top})`)
           .selectAll("rect")
           .data(data)
-          .join("rect")
-          .on("mouseover", function (event, d) {
-            tooltip.transition().duration(200).style("opacity", 0.9);
+          .join("rect");
 
-            tooltip
-              .html(regionSummaryChartsTooltip(d, chartId))
-              .style("left", event.pageX + "px")
-              .style("top", event.pageY - 28 + "px");
-
-            d3.select(this).transition().attr("fill", "#eec42d");
-          })
-          .on("mouseout", function (d) {
-            tooltip.transition().duration(500).style("opacity", 0);
-            d3.select(this).transition().attr("fill", "#00AFDB");
-          });
-
-        bars.attr("width", (data) => x(data));
         bars.attr("height", y.bandwidth());
         bars.attr("fill", "#00AFDB").style("stroke", "#000");
 
         bars.attr("y", (data, i) => y(regions[i]));
         bars.attr("x", 0.5);
+
+        bars.on("mouseover", function (event, d) {
+          tooltip.transition().duration(200).style("opacity", 0.9);
+
+          tooltip
+            .html(regionSummaryChartsTooltip(d, chartId))
+            .style("left", event.pageX + "px")
+            .style("top", event.pageY - 28 + "px");
+
+          d3.select(this).transition().attr("fill", "#eec42d");
+        });
+
+        bars.on("mouseout", function (d) {
+          tooltip.transition().duration(500).style("opacity", 0);
+          d3.select(this).transition().attr("fill", "#00AFDB");
+        });
+
+        bars
+          .transition()
+          .ease(d3.easeLinear)
+          .duration(800)
+          .attr("width", (data) => x(data))
+          .delay((d, i) => i * 100);
 
         svg
           .selectAll(".text")
