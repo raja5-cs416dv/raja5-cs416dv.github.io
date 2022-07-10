@@ -73,7 +73,7 @@
             </header>
 
             <div class="w3-container">
-              <svg id="CountOfCustomers"></svg>
+              <svg id="CountOfCustomersChart"></svg>
             </div>
           </div>
         </div>
@@ -85,7 +85,7 @@
             </header>
 
             <div class="w3-container">
-              <p>Lorem ipsum...</p>
+              <svg id="SalesChart"></svg>
             </div>
           </div>
         </div>
@@ -97,7 +97,7 @@
             </header>
 
             <div class="w3-container">
-              <p>Lorem ipsum...</p>
+              <svg id="ProfitChart"></svg>
             </div>
           </div>
         </div>
@@ -116,7 +116,7 @@
 
     <script>
       let data = null;
-      let selectedYear = 2019;
+      let selectedYear = null;
       const uniqueCustomerIds = [];
       const regions = ["West", "East", "Central", "South"];
 
@@ -130,7 +130,7 @@
         data = await d3.csv("./SampleSuperstoreOrders1.csv");
         console.log("Data loaded");
 
-        setSceneTitle();
+        selectYear("2019");
       }
 
       function selectYear(year) {
@@ -144,8 +144,6 @@
               selectedYear--;
             }
 
-            setSceneTitle();
-
             break;
           case "next":
             console.log("next");
@@ -156,53 +154,72 @@
               selectedYear++;
             }
 
-            setSceneTitle();
-
             break;
           case "2019":
             selectedYear = 2019;
-            setSceneTitle();
 
             break;
           case "2020":
             selectedYear = 2020;
-            setSceneTitle();
 
             break;
           case "2021":
             selectedYear = 2021;
-            setSceneTitle();
 
             break;
           case "2022":
             selectedYear = 2022;
-            setSceneTitle();
 
             break;
         }
-      }
 
-      function setSceneTitle() {
         document.getElementById(
           "sceneTitle"
         ).innerHTML = `Year - ${selectedYear}`;
 
         processData();
-
-        d3.select("#CountOfCustomers").html = "";
-        
-        countOfCustomersChart();
+        updateCharts();
       }
 
-      function resetChartData() {
-        chartData.countOfCustomers.length = 0;
-        chartData.sales.length = 0;
-        chartData.profit.length = 0;
+      function currencyFormatter(val) {
+        console.log(val);
+
+        const formatter = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        });
+
+        return formatter.format(val);
+      }
+
+      function updateCharts() {
+        d3.select("#CountOfCustomersChart").html("");
+        d3.select("#SalesChart").html("");
+        d3.select("#ProfitChart").html("");
+
+        updateRegionSummaryCharts(
+          "#CountOfCustomersChart",
+          chartData.countOfCustomers,
+          (d) => {
+            return d;
+          }
+        );
+
+        updateRegionSummaryCharts("#SalesChart", chartData.sales, (d) => {
+          return currencyFormatter(d);
+        });
+        updateRegionSummaryCharts("#ProfitChart", chartData.profit, (d) => {
+          return currencyFormatter(d);
+        });
       }
 
       function processData() {
         uniqueCustomerIds.length = 0;
-        resetChartData();
+
+        chartData.countOfCustomers.length = 0;
+        chartData.sales.length = 0;
+        chartData.profit.length = 0;
 
         let countOfCustomersSouth = 0;
         let countOfCustomersWest = 0;
@@ -327,11 +344,11 @@
         console.log(`chartData: ${JSON.stringify(chartData)}`);
       }
 
-      function countOfCustomersChart() {
-        const width = 300;
+      function updateRegionSummaryCharts(chartId, data, textFunc) {
+        const width = 400;
         const height = 200;
 
-        const svg = d3.select("#CountOfCustomers");
+        const svg = d3.select(chartId);
 
         svg.attr("width", width);
         svg.attr("height", height);
@@ -345,7 +362,7 @@
           .style("stroke", "#000")
           .style("fill", "none");
 
-        const margin = { top: 10, right: 10, bottom: 50, left: 50 };
+        const margin = { top: 10, right: 100, bottom: 50, left: 50 };
         const plotHeight = height - margin.top - margin.bottom;
         const plotWidth = width - margin.left - margin.right;
 
@@ -362,7 +379,7 @@
           .range([0, plotWidth])
           .domain([
             0,
-            d3.max(chartData.countOfCustomers, function (d) {
+            d3.max(data, function (d) {
               return d;
             }),
           ]);
@@ -391,7 +408,7 @@
           .append("g")
           .attr("transform", `translate(${margin.left}, ${margin.top})`)
           .selectAll("rect")
-          .data(chartData.countOfCustomers)
+          .data(data)
           .join("rect");
 
         bars.attr("width", (data) => x(data));
@@ -403,11 +420,11 @@
 
         svg
           .selectAll(".text")
-          .data(chartData.countOfCustomers)
+          .data(data)
           .enter()
           .append("text")
           .attr("x", function (d) {
-            return x(d) + 20;
+            return x(d) + 85;
           })
           .attr("y", function (d, i) {
             return y(regions[i]) + 20;
@@ -415,11 +432,9 @@
           .attr("dy", ".75em")
           .attr("font-family", "sans-serif")
           .attr("font-size", "14px")
-          .attr("fill", "white")
+          .attr("fill", "black")
           .attr("text-anchor", "middle")
-          .text(function (d) {
-            return d;
-          });
+          .text(textFunc);
       }
     </script>
   </body>
