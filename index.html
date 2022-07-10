@@ -5,6 +5,11 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
 
   <style>
+    .annotation-year-pagination,
+    text.title {
+      font-size: 0.8em;
+    }
+
     div.tooltip {
       position: absolute;
       text-align: left;
@@ -26,106 +31,185 @@
       </div>
     </div>
 
+    <br />
+
     <div class="w3-row">
-      <div class="w3-container">
-        <div class="w3-panel w3-border">
-          <div class="w3-bar">
-            <a
-              href="#"
-              class="w3-button"
-              onclick="selectYear('prev'); return false;"
-              >&laquo;</a
-            >
-            <a
-              href="#"
-              class="w3-button"
-              onclick="selectYear('2019'); return false;"
-              >2019</a
-            >
-            <a
-              href="#"
-              class="w3-button"
-              onclick="selectYear('2020'); return false;"
-              >2020</a
-            >
-            <a
-              href="#"
-              class="w3-button"
-              onclick="selectYear('2021'); return false;"
-              >2021</a
-            >
-            <a
-              href="#"
-              class="w3-button"
-              onclick="selectYear('2022'); return false;"
-              >2022</a
-            >
-            <a
-              href="#"
-              class="w3-button"
-              onclick="selectYear('next'); return false;"
-              >&raquo;</a
-            >
+      <div class="w3-third w3-container">
+        <div class="w3-card-4">
+          <svg id="year-pagination" width="400" height="100">
+            <!-- <rect
+                height="100"
+                width="400"
+                x="0"
+                y="0"
+                stroke="#000"
+                fill="none"
+              /> -->
+            <text x="10" y="20" onclick="selectYear('prev')">&laquo;</text>
+            <text x="30" y="20" onclick="selectYear('2019')">2019</text>
+            <text x="80" y="20" onclick="selectYear('2020')">2020</text>
+            <text x="130" y="20" onclick="selectYear('2021')">2021</text>
+            <text x="180" y="20" onclick="selectYear('2022')">2022</text>
+            <text x="230" y="20" onclick="selectYear('next')">&raquo;</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="w3-third w3-container">
+        <div class="w3-card-4">
+          <svg id="segment-filter" width="400" height="100">
+            <!-- <rect
+              height="100"
+              width="400"
+              x="0"
+              y="0"
+              stroke="#000"
+              fill="none"
+            /> -->
+            <foreignObject x="10" y="5" width="400" height="100">
+              <input
+                type="checkbox"
+                id="segment_all"
+                name="segment_all"
+                value="segment_all"
+                checked="true"
+              />
+              <label for="segment_all">All</label><br />
+
+              <input
+                type="checkbox"
+                id="segment_consumer"
+                name="segment_consumer"
+                value="segment_consumer"
+                checked="true"
+              />
+              <label for="segment_consumer">Consumer</label><br />
+
+              <input
+                type="checkbox"
+                id="segment_corporate"
+                name="segment_corporate"
+                value="segment_corporate"
+                checked="true"
+              />
+              <label for="segment_corporate">Corporate</label><br />
+
+              <input
+                type="checkbox"
+                id="segment_home_office"
+                name="segment_home_office"
+                value="segment_home_office"
+                checked="true"
+              />
+              <label for="segment_home_office">Home Office</label><br />
+            </foreignObject>
+          </svg>
+        </div>
+      </div>
+
+      <div class="w3-third w3-container">
+        <div class="w3-card-4">
+          <svg id="category-filter" width="400" height="100">
+            <!-- <rect
+              height="100"
+              width="400"
+              x="0"
+              y="0"
+              stroke="#000"
+              fill="none"
+            /> -->
+            <foreignObject x="10" y="5" width="400" height="100">
+              <input
+                type="checkbox"
+                id="category_all"
+                name="category_all"
+                value="category_all"
+                checked="true"
+              />
+              <label for="category_all">All</label><br />
+
+              <input
+                type="checkbox"
+                id="category_furniture"
+                name="category_furniture"
+                value="category_furniture"
+                checked="true"
+              />
+              <label for="category_furniture">Furniture</label><br />
+
+              <input
+                type="checkbox"
+                id="category_office_supplies"
+                name="category_office_supplies"
+                value="category_office_supplies"
+                checked="true"
+              />
+              <label for="category_office_supplies">Office Supplies</label
+              ><br />
+
+              <input
+                type="checkbox"
+                id="category_technology"
+                name="category_technology"
+                value="category_technology"
+                checked="true"
+              />
+              <label for="category_technology">Technology</label><br />
+            </foreignObject>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="w3-row">
+      <div class="w3-third w3-container">
+        <div class="w3-card-4">
+          <header class="w3-container w3-teal">
+            <h6>Count of Customers</h6>
+          </header>
+
+          <div class="w3-container">
+            <svg id="CountOfCustomersChart"></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="w3-third w3-container">
+        <div class="w3-card-4">
+          <header class="w3-container w3-teal">
+            <h6>Sales</h6>
+          </header>
+
+          <div class="w3-container">
+            <svg id="SalesChart"></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="w3-third w3-container">
+        <div class="w3-card-4">
+          <header class="w3-container w3-teal">
+            <h6>Profit</h6>
+          </header>
+
+          <div class="w3-container">
+            <svg id="ProfitChart"></svg>
           </div>
         </div>
       </div>
     </div>
 
+    <br />
+
     <div class="w3-row">
-      <div class="w3-container">
+      <div class="w3-container w3-light-grey">
         <div class="w3-panel">
-          <h5 id="sceneTitle"></h5>
+          <a href="https://github.com/raja5-cs416dv/raja5-cs416dv.github.io"
+            >Repository</a
+          >
         </div>
-      </div>
-    </div>
-
-    <div class="w3-container">
-      <div class="w3-row">
-        <div class="w3-third w3-container">
-          <div class="w3-card-4">
-            <header class="w3-container w3-teal">
-              <h6>Count of Customers</h6>
-            </header>
-
-            <div class="w3-container">
-              <svg id="CountOfCustomersChart"></svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="w3-third w3-container">
-          <div class="w3-card-4">
-            <header class="w3-container w3-teal">
-              <h6>Sales</h6>
-            </header>
-
-            <div class="w3-container">
-              <svg id="SalesChart"></svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="w3-third w3-container">
-          <div class="w3-card-4">
-            <header class="w3-container w3-teal">
-              <h6>Profit</h6>
-            </header>
-
-            <div class="w3-container">
-              <svg id="ProfitChart"></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <p></p>
-    </div>
-
-    <div class="w3-container w3-light-grey">
-      <div class="w3-panel">
-        <a href="https://github.com/raja5-cs416dv/raja5-cs416dv.github.io"
-          >Repository</a
-        >
       </div>
     </div>
 
@@ -142,10 +226,105 @@
       };
 
       async function init() {
+        yearPaginationAnnotations();
+        segmentFilterAnnotations();
+        categoryFilterAnnotations();
+
         data = await d3.csv("./SampleSuperstoreOrders1.csv");
         console.log("Data loaded");
 
         selectYear("2019");
+      }
+
+      function yearPaginationAnnotations() {
+        const annotations = [
+          {
+            type: d3.annotationCallout,
+            note: {
+              label:
+                "Click Next or previous to see Customer Analysis over years, or select an year by clicking on it",
+              title: "Slide Show",
+              wrap: 300,
+            },
+            x: 50,
+            y: 30,
+            dy: 10,
+            dx: 10,
+          },
+        ].map(function (d) {
+          d.color = "grey";
+          return d;
+        });
+
+        const makeAnnotations = d3
+          .annotation()
+          .type(d3.annotationLabel)
+          .annotations(annotations);
+
+        d3.select("#year-pagination")
+          .append("g")
+          .attr("class", "annotation-year-pagination")
+          .call(makeAnnotations);
+      }
+
+      function segmentFilterAnnotations() {
+        const annotations = [
+          {
+            type: d3.annotationCallout,
+            note: {
+              label: "Select one or more segments",
+              title: "Segment Filter",
+              wrap: 300,
+            },
+            x: 150,
+            y: 50,
+            dy: -5,
+            dx: 10,
+          },
+        ].map(function (d) {
+          d.color = "grey";
+          return d;
+        });
+
+        const makeAnnotations = d3
+          .annotation()
+          .type(d3.annotationLabel)
+          .annotations(annotations);
+
+        d3.select("#segment-filter")
+          .append("g")
+          .attr("class", "annotation-year-pagination")
+          .call(makeAnnotations);
+      }
+
+      function categoryFilterAnnotations() {
+        const annotations = [
+          {
+            type: d3.annotationCallout,
+            note: {
+              label: "Select one or more categories",
+              title: "Category Filter",
+              wrap: 300,
+            },
+            x: 150,
+            y: 50,
+            dy: -5,
+            dx: 10,
+          },
+        ].map(function (d) {
+          d.color = "grey";
+          return d;
+        });
+
+        const makeAnnotations = d3
+          .annotation()
+          .type(d3.annotationLabel)
+          .annotations(annotations);
+
+        d3.select("#category-filter")
+          .append("g")
+          .attr("class", "annotation-year-pagination")
+          .call(makeAnnotations);
       }
 
       function selectYear(year) {
@@ -181,10 +360,6 @@
         }
 
         console.log(`Selected year: ${selectedYear}`);
-
-        document.getElementById(
-          "sceneTitle"
-        ).innerHTML = `Year - ${selectedYear}`;
 
         processData();
         updateCharts();
