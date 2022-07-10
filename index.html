@@ -4,6 +4,21 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
 
+  <style>
+    div.tooltip {
+      position: absolute;
+      text-align: left;
+      width: 200px;
+      height: 100px;
+      padding: 10px;
+      font: 12px sans-serif;
+      background: lightsteelblue;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+  </style>
+
   <body onload="init()">
     <div class="w3-row">
       <div class="w3-container w3-blue">
@@ -136,8 +151,6 @@
       function selectYear(year) {
         switch (year) {
           case "prev":
-            console.log("prev");
-
             if (selectedYear <= 2019) {
               selectedYear = 2019;
             } else {
@@ -146,8 +159,6 @@
 
             break;
           case "next":
-            console.log("next");
-
             if (selectedYear >= 2022) {
               selectedYear = 2022;
             } else {
@@ -157,21 +168,19 @@
             break;
           case "2019":
             selectedYear = 2019;
-
             break;
           case "2020":
             selectedYear = 2020;
-
             break;
           case "2021":
             selectedYear = 2021;
-
             break;
           case "2022":
             selectedYear = 2022;
-
             break;
         }
+
+        console.log(`Selected year: ${selectedYear}`);
 
         document.getElementById(
           "sceneTitle"
@@ -182,8 +191,6 @@
       }
 
       function currencyFormatter(val) {
-        console.log(val);
-
         const formatter = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
@@ -191,6 +198,73 @@
         });
 
         return formatter.format(val);
+      }
+
+      function formatAsPercent(val) {
+        const formatter = new Intl.NumberFormat("default", {
+          style: "percent",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+        return formatter.format(val);
+      }
+
+      function regionIndex(d, data) {
+        for (let i = 0; i < 4; i++) {
+          if (data[i] === d) {
+            return i;
+          }
+        }
+      }
+
+      function regionSummaryChartsTooltip(d, chartId) {
+        let index = 0;
+        let data = chartData.countOfCustomers;
+        let customers = 0;
+        let sales = 0;
+        let profit = 0;
+        let salesPerCustomer = 0;
+        let profitRatio = 0;
+
+        if (chartId === "#CountOfCustomersChart") {
+          index = regionIndex(d, chartData.countOfCustomers);
+
+          customers = d;
+          sales = chartData.sales[index];
+          profit = chartData.profit[index];
+        }
+
+        if (chartId === "#SalesChart") {
+          index = regionIndex(d, chartData.sales);
+
+          customers = chartData.countOfCustomers[index];
+          sales = d;
+          profit = chartData.profit[index];
+        }
+
+        if (chartId === "#ProfitChart") {
+          index = regionIndex(d, chartData.profit);
+
+          customers = chartData.countOfCustomers[index];
+          sales = chartData.sales[index];
+          profit = d;
+        }
+
+        salesPerCustomer = sales / customers;
+        profitRatio = profit / sales;
+
+        const htmlStr = `
+          <div>
+            Customers:      ${customers} </br>
+            Sales:          ${currencyFormatter(sales)} </br>
+            Profit:         ${currencyFormatter(profit)} </br>
+            Sales/Customer: ${currencyFormatter(salesPerCustomer)} </br>
+            Profit Ratio:   ${formatAsPercent(profitRatio)}
+          </div>
+        `;
+
+        return htmlStr;
       }
 
       function updateCharts() {
@@ -341,7 +415,7 @@
         chartData.profit.push(profitCentral);
         chartData.profit.push(profitSouth);
 
-        console.log(`chartData: ${JSON.stringify(chartData)}`);
+        console.log(`Chart data: ${JSON.stringify(chartData)}`);
       }
 
       function updateRegionSummaryCharts(chartId, data, textFunc) {
@@ -374,6 +448,7 @@
           .attr("width", plotWidth)
           .style("fill", "#00AFDB");
 
+        // Add X Axis
         const x = d3
           .scaleLinear()
           .range([0, plotWidth])
@@ -384,6 +459,7 @@
             }),
           ]);
 
+        // Add Y Axis
         const y = d3
           .scaleBand()
           .range([0, plotHeight])
@@ -401,15 +477,36 @@
 
         documentOutline.remove();
         plotOutline.remove();
-
         y.call((g) => g.select(".domain").remove());
 
+        // Add tooltip
+        const tooltip = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
+
+        // Add bars
         const bars = svg
           .append("g")
           .attr("transform", `translate(${margin.left}, ${margin.top})`)
           .selectAll("rect")
           .data(data)
-          .join("rect");
+          .join("rect")
+          .on("mouseover", function (event, d) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
+
+            tooltip
+              .html(regionSummaryChartsTooltip(d, chartId))
+              .style("left", event.pageX + "px")
+              .style("top", event.pageY - 28 + "px");
+
+            d3.select(this).transition().attr("fill", "#eec42d");
+          })
+          .on("mouseout", function (d) {
+            tooltip.transition().duration(500).style("opacity", 0);
+            d3.select(this).transition().attr("fill", "#00AFDB");
+          });
 
         bars.attr("width", (data) => x(data));
         bars.attr("height", y.bandwidth());
