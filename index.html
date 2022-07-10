@@ -263,6 +263,23 @@
     <br />
 
     <div class="w3-row">
+      <div class="w3-container">
+        <div class="w3-card-4">
+          <header class="w3-container w3-teal">
+            <h6>Sales and Profit By Customer</h6>
+          </header>
+
+          <div class="w3-container">
+            <span name="NoData" />
+            <svg id="SalesProfitByCustomerChart"></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="w3-row">
       <div class="w3-container w3-light-grey">
         <div class="w3-panel">
           <a href="https://github.com/raja5-cs416dv/raja5-cs416dv.github.io"
@@ -276,6 +293,7 @@
       let data = null;
       let selectedYear = null;
       const uniqueCustomerIds = [];
+      let salesProfitByCustomer = {};
       const regions = ["West", "East", "Central", "South"];
       const selectedSegments = ["Consumer", "Corporate", "Home Office"];
       const selectedCategories = ["Furniture", "Office Supplies", "Technology"];
@@ -284,6 +302,7 @@
         countOfCustomers: [],
         sales: [],
         profit: [],
+        salesProfitByCustomerList: [],
       };
 
       async function init() {
@@ -333,7 +352,7 @@
           {
             type: d3.annotationCallout,
             note: {
-              label: "Select one or more segments",
+              label: "Select one or more product segments",
               title: "Segment Filter",
               wrap: 300,
             },
@@ -363,7 +382,7 @@
           {
             type: d3.annotationCallout,
             note: {
-              label: "Select one or more categories",
+              label: "Select one or more product categories",
               title: "Category Filter",
               wrap: 300,
             },
@@ -416,7 +435,12 @@
         switch (year) {
           case "prev":
             if (selectedYear <= 2019) {
-              selectedYear = 2019;
+              //selectedYear = 2019;
+              d3.select(`#pagination_${selectedYear}`)
+                .selectAll("rect")
+                .style("fill", "lightblue");
+
+              return;
             } else {
               selectedYear--;
             }
@@ -424,7 +448,13 @@
             break;
           case "next":
             if (selectedYear >= 2022) {
-              selectedYear = 2022;
+              //selectedYear = 2022;
+
+              d3.select(`#pagination_${selectedYear}`)
+                .selectAll("rect")
+                .style("fill", "lightblue");
+
+              return;
             } else {
               selectedYear++;
             }
@@ -574,6 +604,7 @@
         d3.select("#CountOfCustomersChart").html("");
         d3.select("#SalesChart").html("");
         d3.select("#ProfitChart").html("");
+        d3.select("#SalesProfitByCustomerChart").html("");
 
         // if (
         //   chartData.countOfCustomers[0] === 0 &&
@@ -594,7 +625,7 @@
         //   d3.select("#NoData").html("");
         // }
 
-        updateRegionSummaryCharts(
+        regionSummaryCharts(
           "#CountOfCustomersChart",
           chartData.countOfCustomers,
           (d) => {
@@ -602,12 +633,15 @@
           }
         );
 
-        updateRegionSummaryCharts("#SalesChart", chartData.sales, (d) => {
+        regionSummaryCharts("#SalesChart", chartData.sales, (d) => {
           return currencyFormatter(d);
         });
-        updateRegionSummaryCharts("#ProfitChart", chartData.profit, (d) => {
+
+        regionSummaryCharts("#ProfitChart", chartData.profit, (d) => {
           return currencyFormatter(d);
         });
+
+        salesProfitByCustomerChart();
       }
 
       function processData() {
@@ -616,10 +650,12 @@
         );
 
         uniqueCustomerIds.length = 0;
+        salesProfitByCustomer = {};
 
         chartData.countOfCustomers.length = 0;
         chartData.sales.length = 0;
         chartData.profit.length = 0;
+        chartData.salesProfitByCustomerList.length = 0;
 
         let countOfCustomersSouth = 0;
         let countOfCustomersWest = 0;
@@ -638,6 +674,7 @@
 
         data.forEach((e, i) => {
           const customerId = e["Customer ID"];
+          const customerName = e["Customer Name"];
           const region = e.Region;
           const orderDate = e["Order Date"];
           const orderYear = new Date(orderDate).getFullYear();
@@ -734,7 +771,25 @@
 
               break;
           }
+
+          if (!Object.keys(salesProfitByCustomer).includes(customerName)) {
+            salesProfitByCustomer[customerName] = [0, 0];
+          }
+
+          const salesProfitByCustomerArray =
+            salesProfitByCustomer[customerName];
+          salesProfitByCustomerArray[0] = salesProfitByCustomerArray[0] + sales;
+          salesProfitByCustomerArray[1] =
+            salesProfitByCustomerArray[1] + profit;
         });
+
+        for (const cname in salesProfitByCustomer) {
+          chartData.salesProfitByCustomerList.push({
+            "Customer Name": cname,
+            Sales: salesProfitByCustomer[cname][0],
+            Profit: salesProfitByCustomer[cname][1],
+          });
+        }
 
         chartData.countOfCustomers.push(countOfCustomersWest);
         chartData.countOfCustomers.push(countOfCustomersEast);
@@ -754,7 +809,7 @@
         console.log(`Chart data: ${JSON.stringify(chartData)}`);
       }
 
-      function updateRegionSummaryCharts(chartId, data, textFunc) {
+      function regionSummaryCharts(chartId, data, textFunc) {
         const width = 400;
         const height = 200;
 
@@ -889,6 +944,116 @@
           .attr("fill", "black")
           .attr("text-anchor", "middle")
           .text(textFunc);
+      }
+
+      function salesProfitByCustomerChart() {
+        const width = 1200;
+        const height = 600;
+
+        const svg = d3.select("#SalesProfitByCustomerChart");
+
+        svg.attr("width", width);
+        svg.attr("height", height);
+
+        const documentOutline = svg
+          .append("rect")
+          .attr("height", height)
+          .attr("width", width)
+          .attr("x", 0)
+          .attr("y", 0)
+          .style("stroke", "#000")
+          .style("fill", "none");
+
+        const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+        const plotHeight = height - margin.top - margin.bottom;
+        const plotWidth = width - margin.left - margin.right;
+
+        const plotOutline = svg
+          .append("rect")
+          .attr("x", margin.left)
+          .attr("y", margin.top)
+          .attr("height", plotHeight)
+          .attr("width", plotWidth)
+          .style("fill", "#00AFDB");
+
+        // X scale
+        let x = d3
+          .scaleLinear()
+          .domain([
+            0,
+            d3.max(chartData.salesProfitByCustomerList, function (d) {
+              return d.Sales + 2000;
+            }),
+          ])
+          .range([0, plotWidth]);
+
+        // Y scale
+        let y = d3
+          .scaleLinear()
+          .domain([
+            d3.min(chartData.salesProfitByCustomerList, function (d) {
+              return d.Profit - 2000;
+            }),
+            d3.max(chartData.salesProfitByCustomerList, function (d) {
+              return d.Profit + 2000;
+            }),
+          ])
+          .range([plotHeight, 0]);
+
+        // Color scale
+        const myColor = d3
+          .scaleLinear()
+          .domain([
+            d3.min(chartData.salesProfitByCustomerList, function (d) {
+              return (d.Profit / d.Sales) * 100;
+            }),
+            d3.max(chartData.salesProfitByCustomerList, function (d) {
+              return (d.Profit / d.Sales) * 100;
+            }),
+          ])
+          .range(["red", "green"]);
+
+        documentOutline.remove();
+        plotOutline.remove();
+
+        let g = svg
+          .append("g")
+          .attr(
+            "transform",
+            "translate(" + margin.left + "," + margin.top + ")"
+          );
+
+        // Add dots
+        g.selectAll("dot")
+          .data(chartData.salesProfitByCustomerList)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) {
+            return x(d.Sales);
+          })
+          .attr("cy", function (d) {
+            return y(d.Profit);
+          })
+          .attr("r", function (d) {
+            return 6;
+          })
+          .style("fill", function (d) {
+            const profitRatio = (d.Profit / d.Sales) * 100;
+            const color = myColor(profitRatio);
+
+            console.log(`profitRatio: ${profitRatio}, color: ${color}`);
+            return color;
+          });
+
+        // Add Y axis
+        g.append("g")
+          //.attr("transform", "translate(" + 0 + "," + 600 + ")")
+          .call(d3.axisLeft(y));
+
+        // Add X axis
+        g.append("g")
+          .attr("transform", "translate(" + 0 + "," + 500 + ")")
+          .call(d3.axisBottom(x));
       }
     </script>
   </body>
