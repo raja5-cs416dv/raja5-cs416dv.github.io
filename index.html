@@ -1,13 +1,425 @@
-
 <html>
-  <script src="https://d3js.org/d3.v5.min.js"></script>
- 
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
 
   <body onload="init()">
+    <div class="w3-row">
+      <div class="w3-container w3-blue">
+        <h2>Customer Analysis</h2>
+      </div>
+    </div>
+
+    <div class="w3-row">
+      <div class="w3-container">
+        <div class="w3-panel w3-border">
+          <div class="w3-bar">
+            <a
+              href="#"
+              class="w3-button"
+              onclick="selectYear('prev'); return false;"
+              >&laquo;</a
+            >
+            <a
+              href="#"
+              class="w3-button"
+              onclick="selectYear('2019'); return false;"
+              >2019</a
+            >
+            <a
+              href="#"
+              class="w3-button"
+              onclick="selectYear('2020'); return false;"
+              >2020</a
+            >
+            <a
+              href="#"
+              class="w3-button"
+              onclick="selectYear('2021'); return false;"
+              >2021</a
+            >
+            <a
+              href="#"
+              class="w3-button"
+              onclick="selectYear('2022'); return false;"
+              >2022</a
+            >
+            <a
+              href="#"
+              class="w3-button"
+              onclick="selectYear('next'); return false;"
+              >&raquo;</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="w3-row">
+      <div class="w3-container">
+        <div class="w3-panel">
+          <h5 id="sceneTitle"></h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="w3-container">
+      <div class="w3-row">
+        <div class="w3-third w3-container">
+          <div class="w3-card-4">
+            <header class="w3-container w3-teal">
+              <h6>Count of Customers</h6>
+            </header>
+
+            <div class="w3-container">
+              <svg id="CountOfCustomers"></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="w3-third w3-container">
+          <div class="w3-card-4">
+            <header class="w3-container w3-teal">
+              <h6>Sales</h6>
+            </header>
+
+            <div class="w3-container">
+              <p>Lorem ipsum...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="w3-third w3-container">
+          <div class="w3-card-4">
+            <header class="w3-container w3-teal">
+              <h6>Profit</h6>
+            </header>
+
+            <div class="w3-container">
+              <p>Lorem ipsum...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p></p>
+    </div>
+
+    <div class="w3-container w3-light-grey">
+      <div class="w3-panel">
+        <a href="https://github.com/raja5-cs416dv/raja5-cs416dv.github.io"
+          >Repository</a
+        >
+      </div>
+    </div>
+
     <script>
+      let data = null;
+      let selectedYear = 2019;
+      const uniqueCustomerIds = [];
+      const regions = ["West", "East", "Central", "South"];
+
+      const chartData = {
+        countOfCustomers: [],
+        sales: [],
+        profit: [],
+      };
+
       async function init() {
-        data = await d3.csv("./test.csv");
-        console.log(data);
+        data = await d3.csv("./SampleSuperstoreOrders1.csv");
+        console.log("Data loaded");
+
+        setSceneTitle();
+      }
+
+      function selectYear(year) {
+        switch (year) {
+          case "prev":
+            console.log("prev");
+
+            if (selectedYear <= 2019) {
+              selectedYear = 2019;
+            } else {
+              selectedYear--;
+            }
+
+            setSceneTitle();
+
+            break;
+          case "next":
+            console.log("next");
+
+            if (selectedYear >= 2022) {
+              selectedYear = 2022;
+            } else {
+              selectedYear++;
+            }
+
+            setSceneTitle();
+
+            break;
+          case "2019":
+            selectedYear = 2019;
+            setSceneTitle();
+
+            break;
+          case "2020":
+            selectedYear = 2020;
+            setSceneTitle();
+
+            break;
+          case "2021":
+            selectedYear = 2021;
+            setSceneTitle();
+
+            break;
+          case "2022":
+            selectedYear = 2022;
+            setSceneTitle();
+
+            break;
+        }
+      }
+
+      function setSceneTitle() {
+        document.getElementById(
+          "sceneTitle"
+        ).innerHTML = `Year - ${selectedYear}`;
+
+        processData();
+
+        d3.select("#CountOfCustomers").html = "";
+        
+        countOfCustomersChart();
+      }
+
+      function resetChartData() {
+        chartData.countOfCustomers.length = 0;
+        chartData.sales.length = 0;
+        chartData.profit.length = 0;
+      }
+
+      function processData() {
+        uniqueCustomerIds.length = 0;
+        resetChartData();
+
+        let countOfCustomersSouth = 0;
+        let countOfCustomersWest = 0;
+        let countOfCustomersCentral = 0;
+        let countOfCustomersEast = 0;
+
+        let salesSouth = 0;
+        let salesWest = 0;
+        let salesCentral = 0;
+        let salesEast = 0;
+
+        let profitSouth = 0;
+        let profitWest = 0;
+        let profitCentral = 0;
+        let profitEast = 0;
+
+        data.forEach((e, i) => {
+          const customerId = e["Customer ID"];
+          const region = e.Region;
+          const orderDate = e["Order Date"];
+          const orderYear = new Date(orderDate).getFullYear();
+
+          const origSalesStr = e.Sales.replace("$", "").replace(",", "").trim();
+          let sales = parseFloat(origSalesStr);
+          if (isNaN(sales)) {
+            sales = 0.0;
+          }
+
+          let origProfitStr = e.Profit.replace("$", "").replace(",", "").trim();
+          let positiveProfit = true;
+          if (origProfitStr.startsWith("(")) {
+            positiveProfit = false;
+            origProfitStr = origProfitStr
+              .replace("(", "")
+              .replace(")", "")
+              .trim();
+          }
+
+          let profit = parseFloat(origProfitStr);
+          if (isNaN(profit)) {
+            profit = 0;
+          }
+
+          if (!positiveProfit) {
+            profit = -Math.abs(profit);
+          }
+
+          if (i === 0) {
+            console.log(e);
+            console.log(
+              `Order date: ${orderDate}: Order year: ${orderYear}, Selected year: ${selectedYear}, Sales: ${sales}, Profit: ${profit}, Region: ${region}`
+            );
+          }
+
+          if (orderYear !== selectedYear) {
+            return;
+          }
+
+          const uniqueCustomerId = `${customerId}_${region}`;
+          let uniqueCustomer = true;
+          if (uniqueCustomerIds.includes(uniqueCustomerId)) {
+            uniqueCustomer = false;
+          }
+
+          uniqueCustomerIds.push(uniqueCustomerId);
+
+          switch (region) {
+            case "South":
+              if (uniqueCustomer) {
+                countOfCustomersSouth++;
+              }
+
+              salesSouth += sales;
+              profitSouth += profit;
+
+              break;
+            case "West":
+              if (uniqueCustomer) {
+                countOfCustomersWest++;
+              }
+
+              salesWest += sales;
+              profitWest += profit;
+
+              break;
+            case "East":
+              if (uniqueCustomer) {
+                countOfCustomersEast++;
+              }
+
+              salesEast += sales;
+              profitEast += profit;
+
+              break;
+            case "Central":
+              if (uniqueCustomer) {
+                countOfCustomersCentral++;
+              }
+
+              salesCentral += sales;
+              profitCentral += profit;
+
+              break;
+          }
+        });
+
+        chartData.countOfCustomers.push(countOfCustomersWest);
+        chartData.countOfCustomers.push(countOfCustomersEast);
+        chartData.countOfCustomers.push(countOfCustomersCentral);
+        chartData.countOfCustomers.push(countOfCustomersSouth);
+
+        chartData.sales.push(salesWest);
+        chartData.sales.push(salesEast);
+        chartData.sales.push(salesCentral);
+        chartData.sales.push(salesSouth);
+
+        chartData.profit.push(profitWest);
+        chartData.profit.push(profitEast);
+        chartData.profit.push(profitCentral);
+        chartData.profit.push(profitSouth);
+
+        console.log(`chartData: ${JSON.stringify(chartData)}`);
+      }
+
+      function countOfCustomersChart() {
+        const width = 300;
+        const height = 200;
+
+        const svg = d3.select("#CountOfCustomers");
+
+        svg.attr("width", width);
+        svg.attr("height", height);
+
+        const documentOutline = svg
+          .append("rect")
+          .attr("height", height)
+          .attr("width", width)
+          .attr("x", 0)
+          .attr("y", 0)
+          .style("stroke", "#000")
+          .style("fill", "none");
+
+        const margin = { top: 10, right: 10, bottom: 50, left: 50 };
+        const plotHeight = height - margin.top - margin.bottom;
+        const plotWidth = width - margin.left - margin.right;
+
+        const plotOutline = svg
+          .append("rect")
+          .attr("x", margin.left)
+          .attr("y", margin.top)
+          .attr("height", plotHeight)
+          .attr("width", plotWidth)
+          .style("fill", "#00AFDB");
+
+        const x = d3
+          .scaleLinear()
+          .range([0, plotWidth])
+          .domain([
+            0,
+            d3.max(chartData.countOfCustomers, function (d) {
+              return d;
+            }),
+          ]);
+
+        const y = d3
+          .scaleBand()
+          .range([0, plotHeight])
+          .domain(regions)
+          .padding(0.1);
+
+        svg
+          .append("g")
+          .call(d3.axisLeft(y).tickSize(0))
+          .attr("transform", `translate(${margin.left}, ${margin.top})`)
+          .style("font-size", "12px")
+          .style("font-weight", "light")
+          .style("fill", "#000")
+          .style("stroke", "none");
+
+        documentOutline.remove();
+        plotOutline.remove();
+
+        y.call((g) => g.select(".domain").remove());
+
+        const bars = svg
+          .append("g")
+          .attr("transform", `translate(${margin.left}, ${margin.top})`)
+          .selectAll("rect")
+          .data(chartData.countOfCustomers)
+          .join("rect");
+
+        bars.attr("width", (data) => x(data));
+        bars.attr("height", y.bandwidth());
+        bars.attr("fill", "#00AFDB").style("stroke", "#000");
+
+        bars.attr("y", (data, i) => y(regions[i]));
+        bars.attr("x", 0.5);
+
+        svg
+          .selectAll(".text")
+          .data(chartData.countOfCustomers)
+          .enter()
+          .append("text")
+          .attr("x", function (d) {
+            return x(d) + 20;
+          })
+          .attr("y", function (d, i) {
+            return y(regions[i]) + 20;
+          })
+          .attr("dy", ".75em")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("fill", "white")
+          .attr("text-anchor", "middle")
+          .text(function (d) {
+            return d;
+          });
       }
     </script>
   </body>

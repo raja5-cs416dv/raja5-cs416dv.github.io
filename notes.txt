@@ -1,0 +1,80 @@
+Customer Analysis
+
+Slides:
+
+* YEAR(OrderDate)
+
+
+Filters:
+
+* Segment
+* Category
+
+
+Scene 1: Overview
+
+1.1 Count of Customers: (Bar chart)
+
+Table: Orders
+Rows: Region
+Columns: DistinctCount(Customer Name)
+Annotations:
+
+* Total number of customer
+** X% of customers in Y region
+
+
+1.2 Sales (Bar chart)
+
+Table: Orders
+Rows: Region
+Columns: SUM(Sales)
+Annotations:
+
+* Total Sales
+** X% of sales in Y region
+
+
+1.3 Profit (Bar chart)
+
+Table: Orders
+Rows: Region
+Columns: SUM(Profit)
+Tooltip: 
+Annotations:
+
+* Total Profit
+** X% of profit in Y region
+
+
+Tooltip: Same for all charts 
+
+* Customers
+* Sales
+* Sales/Customer
+* Profit
+* Profit Ratio
+
+
+
+Scene 2: Sales and Profit by Customer (Scatter Plot)
+
+Table: Orders
+Rows: SUM(Profit)
+Columns: SUM(Sales)
+Detail: Customer Name
+Color: Customer Name
+
+Annotations: Sales, Profit
+
+
+Scene 3: Customer Ranking (Bar Chart)
+
+Table: Orders
+Rows: Customer Name
+Columns: SUM(Sales)
+Annotations: Sales, Profit
+
+
+
+
