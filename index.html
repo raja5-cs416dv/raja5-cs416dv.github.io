@@ -587,6 +587,7 @@
         salesPerCustomer = sales / customers;
         profitRatio = profit / sales;
 
+        //Tooltip
         const htmlStr = `
           <div>
             Customers:      ${customers} </br>
@@ -594,6 +595,20 @@
             Profit:         ${currencyFormatter(profit)} </br>
             Sales/Customer: ${currencyFormatter(salesPerCustomer)} </br>
             Profit Ratio:   ${formatAsPercent(profitRatio)}
+          </div>
+        `;
+
+        return htmlStr;
+      }
+
+      function salesProfitByCustomerChartTooltip(d) {
+        //Tooltip
+        const htmlStr = `
+          <div>
+            Name: ${d["Customer Name"]} </br>
+            Sales: ${currencyFormatter(d.Sales)} </br>
+            Profit: ${currencyFormatter(d.Profit)} </br>
+            Profit Ratio: ${formatAsPercent(d.Profit / d.Sales)}
           </div>
         `;
 
@@ -964,7 +979,7 @@
           .style("stroke", "#000")
           .style("fill", "none");
 
-        const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+        const margin = { top: 50, right: 50, bottom: 50, left: 80 };
         const plotHeight = height - margin.top - margin.bottom;
         const plotWidth = width - margin.left - margin.right;
 
@@ -974,7 +989,8 @@
           .attr("y", margin.top)
           .attr("height", plotHeight)
           .attr("width", plotWidth)
-          .style("fill", "#00AFDB");
+          .style("stroke", "#000")
+          .style("fill", "none");
 
         // X scale
         let x = d3
@@ -1011,10 +1027,17 @@
               return (d.Profit / d.Sales) * 100;
             }),
           ])
-          .range(["red", "green"]);
+          .range(["red", "lightgreen"]);
 
         documentOutline.remove();
         plotOutline.remove();
+
+        // Add tooltip
+        const tooltip = d3
+          .select("body")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
 
         let g = svg
           .append("g")
@@ -1041,19 +1064,49 @@
             const profitRatio = (d.Profit / d.Sales) * 100;
             const color = myColor(profitRatio);
 
-            console.log(`profitRatio: ${profitRatio}, color: ${color}`);
             return color;
-          });
+          })
+          .on("mouseover", function (event, d) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
 
-        // Add Y axis
-        g.append("g")
-          //.attr("transform", "translate(" + 0 + "," + 600 + ")")
-          .call(d3.axisLeft(y));
+            tooltip
+              .html(salesProfitByCustomerChartTooltip(d))
+              .style("left", event.pageX + "px")
+              .style("top", event.pageY - 28 + "px");
+
+            d3.select(this).transition().attr("fill", "#eec42d");
+          })
+          .on("mouseout", function (d) {
+            tooltip.transition().duration(500).style("opacity", 0);
+            d3.select(this).transition().attr("fill", "#00AFDB");
+          });
 
         // Add X axis
         g.append("g")
           .attr("transform", "translate(" + 0 + "," + 500 + ")")
           .call(d3.axisBottom(x));
+
+        svg
+          .append("text")
+          .attr("text-anchor", "end")
+          .attr("x", width / 2)
+          .attr("y", plotHeight + margin.top + 40)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .text("Sales");
+
+        // Add Y axis
+        g.append("g").call(d3.axisLeft(y));
+
+        svg
+          .append("text")
+          .attr("text-anchor", "end")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -margin.left + 110)
+          .attr("x", -height / 2)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .text("Profit");
       }
     </script>
   </body>
