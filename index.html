@@ -940,6 +940,14 @@
           .data(data)
           .enter()
           .append("text")
+          .attr("y", function (d, i) {
+            return y(regions[i]) + 20;
+          })
+          .attr("dy", ".75em")
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "14px")
+          .attr("fill", "black")
+          .attr("text-anchor", "middle")
           .transition()
           .ease(d3.easeLinear)
           .duration(1000)
@@ -950,14 +958,6 @@
               return x(d) + 85;
             }
           })
-          .attr("y", function (d, i) {
-            return y(regions[i]) + 20;
-          })
-          .attr("dy", ".75em")
-          .attr("font-family", "sans-serif")
-          .attr("font-size", "14px")
-          .attr("fill", "black")
-          .attr("text-anchor", "middle")
           .text(textFunc);
       }
 
@@ -1046,41 +1046,6 @@
             "translate(" + margin.left + "," + margin.top + ")"
           );
 
-        // Add dots
-        g.selectAll("dot")
-          .data(chartData.salesProfitByCustomerList)
-          .enter()
-          .append("circle")
-          .attr("cx", function (d) {
-            return x(d.Sales);
-          })
-          .attr("cy", function (d) {
-            return y(d.Profit);
-          })
-          .attr("r", function (d) {
-            return 6;
-          })
-          .style("fill", function (d) {
-            const profitRatio = (d.Profit / d.Sales) * 100;
-            const color = myColor(profitRatio);
-
-            return color;
-          })
-          .on("mouseover", function (event, d) {
-            tooltip.transition().duration(200).style("opacity", 0.9);
-
-            tooltip
-              .html(salesProfitByCustomerChartTooltip(d))
-              .style("left", event.pageX + "px")
-              .style("top", event.pageY - 28 + "px");
-
-            d3.select(this).transition().attr("fill", "#eec42d");
-          })
-          .on("mouseout", function (d) {
-            tooltip.transition().duration(500).style("opacity", 0);
-            d3.select(this).transition().attr("fill", "#00AFDB");
-          });
-
         // Add X axis
         g.append("g")
           .attr("transform", "translate(" + 0 + "," + 500 + ")")
@@ -1107,6 +1072,45 @@
           .attr("font-family", "sans-serif")
           .attr("font-size", "14px")
           .text("Profit");
+
+        // Add dots
+        g.selectAll("dot")
+          .data(chartData.salesProfitByCustomerList)
+          .enter()
+          .append("circle")
+          .attr("stroke", "black")
+          .style("fill", "red")
+          .attr("cy", function (d) {
+            return y(d.Profit);
+          })
+          .on("mouseover", function (event, d) {
+            tooltip.transition().duration(200).style("opacity", 0.9);
+
+            tooltip
+              .html(salesProfitByCustomerChartTooltip(d))
+              .style("left", event.pageX + "px")
+              .style("top", event.pageY - 28 + "px");
+
+            d3.select(this).transition().attr("fill", "#eec42d");
+          })
+          .on("mouseout", function (d) {
+            tooltip.transition().duration(500).style("opacity", 0);
+            d3.select(this).transition().attr("fill", "#00AFDB");
+          })
+          .transition()
+          .duration(2000)
+          .attr("cx", function (d) {
+            return x(d.Sales);
+          })
+          .attr("r", function (d) {
+            return 6;
+          })
+          .style("fill", function (d) {
+            const profitRatio = (d.Profit / d.Sales) * 100;
+            const color = myColor(profitRatio);
+
+            return color;
+          });
       }
     </script>
   </body>
