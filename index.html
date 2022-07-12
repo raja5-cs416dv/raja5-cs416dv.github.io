@@ -5,22 +5,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
 
   <style>
-    .annotation-year-pagination,
-    text.title {
-      font-size: 0.8em;
-    }
-
-    div.tooltip {
+    .tooltip {
       position: absolute;
       text-align: left;
       width: 200px;
-      height: 100px;
+      height: 110px;
       padding: 10px;
       font: 12px sans-serif;
       background: lightsteelblue;
       border: 0px;
       border-radius: 8px;
       pointer-events: none;
+    }
+
+    .tooltip2 {
+      position: absolute;
+      text-align: left;
+      width: 250px;
+      height: 90px;
+      padding: 10px;
+      font: 12px sans-serif;
+      background: lightsteelblue;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    td {
+      font: 12px sans-serif;
     }
   </style>
 
@@ -343,7 +355,8 @@
 
         d3.select("#year-pagination")
           .append("g")
-          .attr("class", "annotation-year-pagination")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
           .call(makeAnnotations);
       }
 
@@ -353,7 +366,7 @@
             type: d3.annotationCallout,
             note: {
               label: "Select one or more product segments",
-              title: "Segment Filter",
+              title: "Filter",
               wrap: 300,
             },
             x: 150,
@@ -373,7 +386,8 @@
 
         d3.select("#segment-filter")
           .append("g")
-          .attr("class", "annotation-year-pagination")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
           .call(makeAnnotations);
       }
 
@@ -383,7 +397,7 @@
             type: d3.annotationCallout,
             note: {
               label: "Select one or more product categories",
-              title: "Category Filter",
+              title: "Filter",
               wrap: 300,
             },
             x: 150,
@@ -403,7 +417,8 @@
 
         d3.select("#category-filter")
           .append("g")
-          .attr("class", "annotation-year-pagination")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
           .call(makeAnnotations);
       }
 
@@ -588,14 +603,43 @@
         profitRatio = profit / sales;
 
         //Tooltip
+        // const htmlStr = `
+        //   <div>
+        //     Customers:      ${customers} </br>
+        //     Sales:          ${currencyFormatter(sales)} </br>
+        //     Profit:         ${currencyFormatter(profit)} </br>
+        //     Sales/Customer: ${currencyFormatter(salesPerCustomer)} </br>
+        //     Profit Ratio:   ${formatAsPercent(profitRatio)}
+        //   </div>
+        // `;
+
         const htmlStr = `
-          <div>
-            Customers:      ${customers} </br>
-            Sales:          ${currencyFormatter(sales)} </br>
-            Profit:         ${currencyFormatter(profit)} </br>
-            Sales/Customer: ${currencyFormatter(salesPerCustomer)} </br>
-            Profit Ratio:   ${formatAsPercent(profitRatio)}
-          </div>
+          <table>
+            <tr>
+              <td><b>Customers:</b></td>
+              <td>${customers} </td>
+            </tr>
+
+            <tr>
+              <td><b>Sales:</b></td>
+              <td>${currencyFormatter(sales)}</td>
+            </tr>
+
+            <tr>
+              <td><b>Profit:</b></td>
+              <td>${currencyFormatter(profit)}</td>
+            </tr>
+
+            <tr>
+              <td><b>Sales/Customer:</b></td>
+              <td>${currencyFormatter(salesPerCustomer)}</td>
+            </tr>
+
+            <tr>
+              <td><b>Profit Ratio:</b></td>
+              <td>${formatAsPercent(profitRatio)}</td>
+            </tr>
+          </table>
         `;
 
         return htmlStr;
@@ -604,12 +648,27 @@
       function salesProfitByCustomerChartTooltip(d) {
         //Tooltip
         const htmlStr = `
-          <div>
-            Name: ${d["Customer Name"]} </br>
-            Sales: ${currencyFormatter(d.Sales)} </br>
-            Profit: ${currencyFormatter(d.Profit)} </br>
-            Profit Ratio: ${formatAsPercent(d.Profit / d.Sales)}
-          </div>
+          <table>
+            <tr>
+              <td><b>Customer Name:</b></td>
+              <td>${d["Customer Name"]}</td>
+            </tr>
+
+            <tr>
+              <td><b>Sales:</b></td>
+              <td>${currencyFormatter(d.Sales)}</td>
+            </tr>
+
+            <tr>
+              <td><b>Profit:</b></td>
+              <td>${currencyFormatter(d.Profit)}</td>
+            </tr>
+
+            <tr>
+              <td><b>Profit Ratio:</b></td>
+              <td>${formatAsPercent(d.Profit / d.Sales)}</td>
+            </tr>
+          </table>
         `;
 
         return htmlStr;
@@ -1036,7 +1095,7 @@
         const tooltip = d3
           .select("body")
           .append("div")
-          .attr("class", "tooltip")
+          .attr("class", "tooltip2")
           .style("opacity", 0);
 
         let g = svg
