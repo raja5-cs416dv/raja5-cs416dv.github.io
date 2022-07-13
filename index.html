@@ -283,7 +283,9 @@
 
           <div class="w3-container">
             <span name="NoData" />
-            <svg id="SalesProfitByCustomerChart"></svg>
+            <div id="SalesProfitByCustomerChartDiv">
+              <svg id="SalesProfitByCustomerChart"></svg>
+            </div>
           </div>
         </div>
       </div>
@@ -324,6 +326,8 @@
 
         data = await d3.csv("./SampleSuperstoreOrders1.csv");
         console.log("Data loaded");
+
+        window.addEventListener("resize", reload);
 
         selectYear("2019");
       }
@@ -603,16 +607,6 @@
         profitRatio = profit / sales;
 
         //Tooltip
-        // const htmlStr = `
-        //   <div>
-        //     Customers:      ${customers} </br>
-        //     Sales:          ${currencyFormatter(sales)} </br>
-        //     Profit:         ${currencyFormatter(profit)} </br>
-        //     Sales/Customer: ${currencyFormatter(salesPerCustomer)} </br>
-        //     Profit Ratio:   ${formatAsPercent(profitRatio)}
-        //   </div>
-        // `;
-
         const htmlStr = `
           <table>
             <tr>
@@ -1021,7 +1015,11 @@
       }
 
       function salesProfitByCustomerChart() {
-        const width = 1200;
+        const chartDiv = document.getElementById(
+          "SalesProfitByCustomerChartDiv"
+        );
+
+        const width = chartDiv.clientWidth;
         const height = 600;
 
         const svg = d3.select("#SalesProfitByCustomerChart");
@@ -1038,7 +1036,7 @@
           .style("stroke", "#000")
           .style("fill", "none");
 
-        const margin = { top: 50, right: 50, bottom: 50, left: 80 };
+        const margin = { top: 50, right: 150, bottom: 50, left: 80 };
         const plotHeight = height - margin.top - margin.bottom;
         const plotWidth = width - margin.left - margin.right;
 
@@ -1170,6 +1168,48 @@
 
             return color;
           });
+
+        //Add color scale
+        const colorScaleData = d3.range(100);
+        const colorScale = d3
+          .scaleLinear()
+          .domain([0, 100])
+          .range(["red", "lightgreen"]);
+
+        g = svg.append("g");
+
+        g.selectAll("ColorRatioRect")
+          .data(colorScaleData)
+          .enter()
+          .append("rect")
+          .attr("x", (d, i) => plotWidth + margin.left + 10 + i)
+          .attr("y", plotHeight - margin.bottom)
+          .attr("width", 1)
+          .attr("height", 20)
+          .style("fill", function (d) {
+            return colorScale(d);
+          });
+
+        g.append("text")
+          .attr("x", plotWidth + margin.left + 25)
+          .attr("y", plotHeight - margin.bottom - 5)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "12px")
+          .text("Profit Ratio");
+
+        g.append("text")
+          .attr("x", plotWidth + margin.left + 10)
+          .attr("y", plotHeight - margin.bottom + 35)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "12px")
+          .text("-50%");
+
+        g.append("text")
+          .attr("x", plotWidth + margin.left + 90)
+          .attr("y", plotHeight - margin.bottom + 35)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "12px")
+          .text("50%");
       }
     </script>
   </body>
