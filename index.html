@@ -63,8 +63,15 @@
               transform="translate(10,5)"
               onclick="selectYear('prev')"
             >
-              <rect x="0" y="0" width="50" height="30" fill="lightgrey"></rect>
               <text x="20" y="20" fill="black">&laquo;</text>
+              <rect
+                x="0"
+                y="0"
+                width="50"
+                height="30"
+                fill="lightgrey"
+                style="opacity: 0.5"
+              ></rect>
             </g>
 
             <g
@@ -72,8 +79,22 @@
               transform="translate(10,5)"
               onclick="selectYear('2019')"
             >
-              <rect x="60" y="0" width="50" height="30" fill="lightgrey"></rect>
-              <text x="65" y="20" fill="black">2019</text>
+              <text
+                x="67"
+                y="20"
+                fill="black"
+                style="font-size: 15px; font-family: sans-serif"
+              >
+                2019
+              </text>
+              <rect
+                x="60"
+                y="0"
+                width="50"
+                height="30"
+                fill="lightgrey"
+                style="opacity: 0.5"
+              ></rect>
             </g>
 
             <g
@@ -81,14 +102,23 @@
               transform="translate(10,5)"
               onclick="selectYear('2020')"
             >
+              <text
+                x="130"
+                y="20"
+                fill="black"
+                style="font-size: 15px; font-family: sans-serif"
+              >
+                2020
+              </text>
+
               <rect
                 x="120"
                 y="0"
                 width="50"
                 height="30"
                 fill="lightgrey"
+                style="opacity: 0.5"
               ></rect>
-              <text x="125" y="20" fill="black">2020</text>
             </g>
 
             <g
@@ -96,14 +126,23 @@
               transform="translate(10,5)"
               onclick="selectYear('2021')"
             >
+              <text
+                x="190"
+                y="20"
+                fill="black"
+                style="font-size: 15px; font-family: sans-serif"
+              >
+                2021
+              </text>
+
               <rect
                 x="180"
                 y="0"
                 width="50"
                 height="30"
                 fill="lightgrey"
+                style="opacity: 0.5"
               ></rect>
-              <text x="185" y="20" fill="black">2021</text>
             </g>
 
             <g
@@ -111,16 +150,23 @@
               transform="translate(10,5)"
               onclick="selectYear('2022')"
             >
+              <text
+                x="248"
+                y="20"
+                fill="black"
+                style="font-size: 15px; font-family: sans-serif"
+              >
+                2022
+              </text>
+
               <rect
                 x="240"
                 y="0"
                 width="50"
                 height="30"
                 fill="lightgrey"
+                style="opacity: 0.5"
               ></rect>
-              <text x="245" y="20" fill="black" onclick="selectYear('2022')">
-                2022
-              </text>
             </g>
 
             <g
@@ -128,14 +174,15 @@
               transform="translate(10,5)"
               onclick="selectYear('next')"
             >
+              <text x="320" y="20" fill="black">&raquo;</text>
               <rect
                 x="300"
                 y="0"
                 width="50"
                 height="30"
                 fill="lightgrey"
+                style="opacity: 0.5"
               ></rect>
-              <text x="320" y="20" fill="black">&raquo;</text>
             </g>
           </svg>
         </div>
@@ -160,7 +207,11 @@
                 checked="true"
                 onclick="selectSegments('segment_consumer')"
               />
-              <label for="segment_consumer">Consumer</label><br />
+              <label
+                for="segment_consumer"
+                style="font-size: 14px; font-family: sans-serif"
+                >Consumer</label
+              ><br />
 
               <input
                 type="checkbox"
@@ -169,7 +220,11 @@
                 checked="true"
                 onclick="selectSegments('segment_corporate')"
               />
-              <label for="segment_corporate">Corporate</label><br />
+              <label
+                for="segment_corporate"
+                style="font-size: 14px; font-family: sans-serif"
+                >Corporate</label
+              ><br />
 
               <input
                 type="checkbox"
@@ -178,7 +233,11 @@
                 checked="true"
                 onclick="selectSegments('segment_home_office')"
               />
-              <label for="segment_home_office">Home Office</label><br />
+              <label
+                for="segment_home_office"
+                style="font-size: 14px; font-family: sans-serif"
+                >Home Office</label
+              ><br />
             </foreignObject>
           </svg>
         </div>
@@ -203,7 +262,11 @@
                 checked="true"
                 onclick="selectCategories('category_furniture')"
               />
-              <label for="category_furniture">Furniture</label><br />
+              <label
+                for="category_furniture"
+                style="font-size: 14px; font-family: sans-serif"
+                >Furniture</label
+              ><br />
 
               <input
                 type="checkbox"
@@ -212,7 +275,10 @@
                 checked="true"
                 onclick="selectCategories('category_office_supplies')"
               />
-              <label for="category_office_supplies">Office Supplies</label
+              <label
+                for="category_office_supplies"
+                style="font-size: 14px; font-family: sans-serif"
+                >Office Supplies</label
               ><br />
 
               <input
@@ -222,7 +288,11 @@
                 checked="true"
                 onclick="selectCategories('category_technology')"
               />
-              <label for="category_technology">Technology</label><br />
+              <label
+                for="category_technology"
+                style="font-size: 14px; font-family: sans-serif"
+                >Technology</label
+              ><br />
             </foreignObject>
           </svg>
         </div>
@@ -240,7 +310,9 @@
 
           <div class="w3-container">
             <span name="NoData" />
-            <svg id="CountOfCustomersChart"></svg>
+            <div id="CountOfCustomersChartDiv">
+              <svg id="CountOfCustomersChart"></svg>
+            </div>
           </div>
         </div>
       </div>
@@ -253,7 +325,9 @@
 
           <div class="w3-container">
             <span name="NoData" />
-            <svg id="SalesChart"></svg>
+            <div id="SalesChartDiv">
+              <svg id="SalesChart"></svg>
+            </div>
           </div>
         </div>
       </div>
@@ -266,7 +340,9 @@
 
           <div class="w3-container">
             <span name="NoData" />
-            <svg id="ProfitChart"></svg>
+            <div id="ProfitChartDiv">
+              <svg id="ProfitChart"></svg>
+            </div>
           </div>
         </div>
       </div>
@@ -454,10 +530,9 @@
         switch (year) {
           case "prev":
             if (selectedYear <= 2019) {
-              //selectedYear = 2019;
               d3.select(`#pagination_${selectedYear}`)
                 .selectAll("rect")
-                .style("fill", "lightblue");
+                .style("fill", "blue");
 
               return;
             } else {
@@ -467,11 +542,9 @@
             break;
           case "next":
             if (selectedYear >= 2022) {
-              //selectedYear = 2022;
-
               d3.select(`#pagination_${selectedYear}`)
                 .selectAll("rect")
-                .style("fill", "lightblue");
+                .style("fill", "blue");
 
               return;
             } else {
@@ -495,7 +568,7 @@
 
         d3.select(`#pagination_${selectedYear}`)
           .selectAll("rect")
-          .style("fill", "lightblue");
+          .style("fill", "blue");
 
         reload();
       }
@@ -695,19 +768,30 @@
 
         regionSummaryCharts(
           "#CountOfCustomersChart",
+          "CountOfCustomersChartDiv",
           chartData.countOfCustomers,
           (d) => {
             return d;
           }
         );
 
-        regionSummaryCharts("#SalesChart", chartData.sales, (d) => {
-          return currencyFormatter(d);
-        });
+        regionSummaryCharts(
+          "#SalesChart",
+          "SalesChartDiv",
+          chartData.sales,
+          (d) => {
+            return currencyFormatter(d);
+          }
+        );
 
-        regionSummaryCharts("#ProfitChart", chartData.profit, (d) => {
-          return currencyFormatter(d);
-        });
+        regionSummaryCharts(
+          "#ProfitChart",
+          "ProfitChartDiv",
+          chartData.profit,
+          (d) => {
+            return currencyFormatter(d);
+          }
+        );
 
         salesProfitByCustomerChart();
       }
@@ -877,8 +961,11 @@
         console.log(`Chart data: ${JSON.stringify(chartData)}`);
       }
 
-      function regionSummaryCharts(chartId, data, textFunc) {
-        const width = 400;
+      function regionSummaryCharts(chartId, chartDivId, data, textFunc) {
+        const chartDiv = document.getElementById(chartDivId);
+        console.log(`${chartDivId}, ${chartDiv}`);
+
+        const width = chartDiv.clientWidth;
         const height = 200;
 
         const svg = d3.select(chartId);
@@ -967,7 +1054,7 @@
             .style("left", event.pageX + "px")
             .style("top", event.pageY - 28 + "px");
 
-          d3.select(this).transition().attr("fill", "#eec42d");
+          d3.select(this).transition().attr("fill", "lightblue");
         });
 
         bars.on("mouseout", function (d) {
@@ -1078,10 +1165,12 @@
           .scaleLinear()
           .domain([
             d3.min(chartData.salesProfitByCustomerList, function (d) {
-              return (d.Profit / d.Sales) * 100;
+              const profitRatio = (d.Profit / d.Sales) * 100;
+              return profitRatio;
             }),
             d3.max(chartData.salesProfitByCustomerList, function (d) {
-              return (d.Profit / d.Sales) * 100;
+              const profitRatio = (d.Profit / d.Sales) * 100;
+              return profitRatio;
             }),
           ])
           .range(["red", "lightgreen"]);
@@ -1148,11 +1237,17 @@
               .style("left", event.pageX + "px")
               .style("top", event.pageY - 28 + "px");
 
-            d3.select(this).transition().attr("fill", "#eec42d");
+            d3.select(this)
+              .transition()
+              .attr("stroke", "black")
+              .attr("stroke-width", 3);
           })
           .on("mouseout", function (d) {
             tooltip.transition().duration(500).style("opacity", 0);
-            d3.select(this).transition().attr("fill", "#00AFDB");
+            d3.select(this)
+              .transition()
+              .attr("stroke", "black")
+              .attr("stroke-width", 1);
           })
           .transition()
           .duration(2000)
@@ -1160,7 +1255,7 @@
             return x(d.Sales);
           })
           .attr("r", function (d) {
-            return 6;
+            return 10;
           })
           .style("fill", function (d) {
             const profitRatio = (d.Profit / d.Sales) * 100;
@@ -1170,10 +1265,10 @@
           });
 
         //Add color scale
-        const colorScaleData = d3.range(100);
+        const colorScaleData = d3.range(-300, 60, 3);
         const colorScale = d3
           .scaleLinear()
-          .domain([0, 100])
+          .domain([-300, 60])
           .range(["red", "lightgreen"]);
 
         g = svg.append("g");
@@ -1187,11 +1282,12 @@
           .attr("width", 1)
           .attr("height", 20)
           .style("fill", function (d) {
+            console.log(d);
             return colorScale(d);
           });
 
         g.append("text")
-          .attr("x", plotWidth + margin.left + 25)
+          .attr("x", plotWidth + margin.left + 35)
           .attr("y", plotHeight - margin.bottom - 5)
           .attr("font-family", "sans-serif")
           .attr("font-size", "12px")
@@ -1202,10 +1298,10 @@
           .attr("y", plotHeight - margin.bottom + 35)
           .attr("font-family", "sans-serif")
           .attr("font-size", "12px")
-          .text("-50%");
+          .text("-300%");
 
         g.append("text")
-          .attr("x", plotWidth + margin.left + 90)
+          .attr("x", plotWidth + margin.left + 105)
           .attr("y", plotHeight - margin.bottom + 35)
           .attr("font-family", "sans-serif")
           .attr("font-size", "12px")
