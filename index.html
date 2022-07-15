@@ -405,7 +405,7 @@
 
         window.addEventListener("resize", reload);
 
-        selectYear("2019");
+        selectYear("2022");
       }
 
       /////////////////////////////////////////////////////////////////////////
@@ -501,7 +501,7 @@
           .call(d3.annotation().annotations(annotations));
       }
 
-      function countOfCustomersAnnotation1(chartDivId) {
+      function countOfCustomersChartAnnotations(chartId, chartDivId) {
         const chartDiv = document.getElementById(chartDivId);
         const width = chartDiv.clientWidth;
         const height = chartDiv.clientHeight;
@@ -513,19 +513,189 @@
               label: "West region has the most number of customers",
               title: "Trend",
               align: "left",
-              wrap: width,
+              wrap: width * 0.9,
             },
             connector: {
               end: "arrow",
             },
             x: 70,
             y: 20,
-            dy: height - 100,
-            dx: -20,
+            ny: height - 70,
+            nx: 60,
           },
         ];
 
-        d3.select("#CountOfCustomersChart")
+        d3.select(chartId)
+          .append("g")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
+          .call(d3.annotation().annotations(annotations));
+      }
+
+      function salesChartAnnotations(chartId, chartDivId) {
+        const chartDiv = document.getElementById(chartDivId);
+        const width = chartDiv.clientWidth;
+        const height = chartDiv.clientHeight;
+
+        const annotations = [
+          {
+            type: d3.annotationLabel,
+            note: {
+              label:
+                "Though West region has highest sales, south region leads sales per customer",
+              title: "2019",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 100,
+            ny: height - 70,
+            dx: -5,
+            className: "salesChartAnnotation2019",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "East region has the highest sales and sales per customer",
+              title: "2020",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 40,
+            ny: height - 70,
+            nx: 60,
+            className: "salesChartAnnotation2020",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "Though West region has highest sales, east region leads sales per customer",
+              title: "2021",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 40,
+            ny: height - 70,
+            nx: 60,
+            className: "salesChartAnnotation2021",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "West region has the highest sales and sales per customer",
+              title: "2022",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 20,
+            ny: height - 70,
+            nx: 60,
+            className: "salesChartAnnotation2022",
+          },
+
+        ];
+
+        d3.select(chartId)
+          .append("g")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
+          .call(d3.annotation().annotations(annotations));
+      }
+
+      function profitChartAnnotations(chartId, chartDivId) {
+        const chartDiv = document.getElementById(chartDivId);
+        const width = chartDiv.clientWidth;
+        const height = chartDiv.clientHeight;
+
+        const annotations = [
+          {
+            type: d3.annotationLabel,
+            note: {
+              label:
+                "West has the highest sales, profit and profit ratio",
+              title: "2019",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 20,
+            ny: height - 70,
+            dx: -5,
+            className: "profitChartAnnotation2019",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "Though East has the highest sales and profit, west leads the profit ratio",
+              title: "2020",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 20,
+            ny: height - 70,
+            nx: 60,
+            className: "profitChartAnnotation2020",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "Though West has the highest sales & profit, south leads the profit ratio",
+              title: "2021",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 100,
+            ny: height - 70,
+            nx: 60,
+            className: "profitChartAnnotation2021",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "West has the highest sales, profit and profit ratio",
+              title: "2022",
+              align: "left",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 20,
+            ny: height - 70,
+            nx: 60,
+            className: "profitChartAnnotation2022",
+          },
+
+        ];
+
+        d3.select(chartId)
           .append("g")
           .attr("font-size", "12px")
           .attr("font-family", "sans-serif")
@@ -828,9 +998,37 @@
       }
 
       function showHideAnnotationsForCharts() {
-        countOfCustomersAnnotation1("CountOfCustomersChartDiv");
+        countOfCustomersChartAnnotations(
+          "#CountOfCustomersChart",
+          "CountOfCustomersChartDiv"
+        );
+
+        salesChartAnnotations("#SalesChart", "SalesChartDiv");
+        profitChartAnnotations("#ProfitChart", "ProfitChartDiv");
+
+        d3.select(".salesChartAnnotation2019").attr("opacity", 0);
+        d3.select(".salesChartAnnotation2020").attr("opacity", 0);
+        d3.select(".salesChartAnnotation2021").attr("opacity", 0);
+        d3.select(".salesChartAnnotation2022").attr("opacity", 0);
+
+        d3.select(".profitChartAnnotation2019").attr("opacity", 0);
+        d3.select(".profitChartAnnotation2020").attr("opacity", 0);
+        d3.select(".profitChartAnnotation2021").attr("opacity", 0);
+        d3.select(".profitChartAnnotation2022").attr("opacity", 0);
+
 
         if (selectedYear === 2019) {
+          d3.select(".salesChartAnnotation2019").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2019").attr("opacity", 1);
+        } else if (selectedYear === 2020) {
+          d3.select(".salesChartAnnotation2020").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2020").attr("opacity", 1);
+        } else if (selectedYear === 2021) {
+          d3.select(".salesChartAnnotation2021").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2021").attr("opacity", 1);
+        } else if (selectedYear === 2022) {
+          d3.select(".salesChartAnnotation2022").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2022").attr("opacity", 1);
         }
       }
 
@@ -1118,7 +1316,7 @@
           .enter()
           .append("text")
           .attr("y", function (d, i) {
-            return y(regions[i]) + 20;
+            return y(regions[i]) + 15;
           })
           .attr("dy", ".75em")
           .attr("font-family", "sans-serif")
