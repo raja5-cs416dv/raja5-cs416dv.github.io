@@ -408,98 +408,128 @@
         selectYear("2019");
       }
 
+      /////////////////////////////////////////////////////////////////////////
+      //
+      // Annotations
+      //
+      /////////////////////////////////////////////////////////////////////////
       function yearPaginationAnnotations() {
         const annotations = [
           {
             type: d3.annotationCallout,
             note: {
               label:
-                "Click Next or previous to see Customer Analysis over years, or select an year by clicking on it",
+                "Click next or previous button to see analysis for each year, or select an year by clicking on it",
               title: "Slide Show",
-              wrap: 300,
+              wrap: 350,
             },
             x: 50,
             y: 40,
             dy: 10,
             dx: 10,
+            subject: {
+              x1: 40,
+              x2: 350,
+              y1: 40,
+              y2: 40,
+            },
           },
-        ].map(function (d) {
-          d.color = "grey";
-          return d;
-        });
-
-        const makeAnnotations = d3
-          .annotation()
-          .type(d3.annotationLabel)
-          .annotations(annotations);
+        ];
 
         d3.select("#year-pagination")
           .append("g")
           .attr("font-size", "12px")
           .attr("font-family", "sans-serif")
-          .call(makeAnnotations);
+          .call(d3.annotation().annotations(annotations));
       }
 
       function segmentFilterAnnotations() {
         const annotations = [
           {
-            type: d3.annotationCallout,
+            type: d3.annotationXYThreshold,
             note: {
               label: "Select one or more product segments",
-              title: "Filter",
+              title: "Segment Filter",
               wrap: 300,
             },
             x: 150,
             y: 50,
             dy: -5,
             dx: 10,
+            subject: {
+              x1: 150,
+              x2: 150,
+              y1: 10,
+              y2: 90,
+            },
           },
-        ].map(function (d) {
-          d.color = "grey";
-          return d;
-        });
-
-        const makeAnnotations = d3
-          .annotation()
-          .type(d3.annotationLabel)
-          .annotations(annotations);
+        ];
 
         d3.select("#segment-filter")
           .append("g")
           .attr("font-size", "12px")
           .attr("font-family", "sans-serif")
-          .call(makeAnnotations);
+          .call(d3.annotation().annotations(annotations));
       }
 
       function categoryFilterAnnotations() {
         const annotations = [
           {
-            type: d3.annotationCallout,
+            type: d3.annotationXYThreshold,
             note: {
               label: "Select one or more product categories",
-              title: "Filter",
+              title: "Category Filter",
               wrap: 300,
             },
             x: 150,
             y: 50,
             dy: -5,
             dx: 10,
+            subject: {
+              x1: 150,
+              x2: 150,
+              y1: 10,
+              y2: 90,
+            },
           },
-        ].map(function (d) {
-          d.color = "grey";
-          return d;
-        });
-
-        const makeAnnotations = d3
-          .annotation()
-          .type(d3.annotationLabel)
-          .annotations(annotations);
+        ];
 
         d3.select("#category-filter")
           .append("g")
           .attr("font-size", "12px")
           .attr("font-family", "sans-serif")
-          .call(makeAnnotations);
+          .call(d3.annotation().annotations(annotations));
+      }
+
+      function countOfCustomersAnnotation1(chartDivId) {
+        const chartDiv = document.getElementById(chartDivId);
+        const width = chartDiv.clientWidth;
+        const height = chartDiv.clientHeight;
+
+        const annotations = [
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "West region has the most number of customers",
+              title: "Trend",
+              align: "left",
+              wrap: width,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: 70,
+            y: 20,
+            dy: height - 100,
+            dx: -20,
+          },
+        ];
+
+        d3.select("#CountOfCustomersChart")
+          .append("g")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
+          .call(d3.annotation().annotations(annotations));
       }
 
       function reload() {
@@ -794,6 +824,14 @@
         );
 
         salesProfitByCustomerChart();
+        showHideAnnotationsForCharts();
+      }
+
+      function showHideAnnotationsForCharts() {
+        countOfCustomersAnnotation1("CountOfCustomersChartDiv");
+
+        if (selectedYear === 2019) {
+        }
       }
 
       function processData() {
@@ -963,7 +1001,6 @@
 
       function regionSummaryCharts(chartId, chartDivId, data, textFunc) {
         const chartDiv = document.getElementById(chartDivId);
-        console.log(`${chartDivId}, ${chartDiv}`);
 
         const width = chartDiv.clientWidth;
         const height = 200;
@@ -982,7 +1019,7 @@
           .style("stroke", "#000")
           .style("fill", "none");
 
-        const margin = { top: 10, right: 100, bottom: 50, left: 50 };
+        const margin = { top: 10, right: 100, bottom: 100, left: 50 };
         const plotHeight = height - margin.top - margin.bottom;
         const plotWidth = width - margin.left - margin.right;
 
@@ -1023,7 +1060,7 @@
 
         documentOutline.remove();
         plotOutline.remove();
-        y.call((g) => g.select(".domain").remove());
+        //y.call((g) => g.select(".domain").remove());
 
         // Add tooltip
         const tooltip = d3
@@ -1041,7 +1078,7 @@
           .join("rect");
 
         bars.attr("height", y.bandwidth());
-        bars.attr("fill", "#00AFDB").style("stroke", "#000");
+        bars.attr("fill", "#00AFDB").style("stroke", "none");
 
         bars.attr("y", (data, i) => y(regions[i]));
         bars.attr("x", 0.5);
@@ -1282,7 +1319,6 @@
           .attr("width", 1)
           .attr("height", 20)
           .style("fill", function (d) {
-            console.log(d);
             return colorScale(d);
           });
 

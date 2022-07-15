@@ -20,8 +20,7 @@ Rows: Region
 Columns: DistinctCount(Customer Name)
 Annotations:
 
-* Total number of customer
-** X% of customers in Y region
+* Trend - West region has the most number of customers
 
 
 1.2 Sales (Bar chart)
@@ -31,9 +30,10 @@ Rows: Region
 Columns: SUM(Sales)
 Annotations:
 
-* Total Sales
-** X% of sales in Y region
-
+* 2019 - Though West region has highest sales, south region leads sales/customer
+* 2020 - East region has the highest sales and sales/customer
+* 2021 - Though West region has highest sales, east region leads sales/customer
+* 2022 - West region has the highest sales & ales/customer
 
 1.3 Profit (Bar chart)
 
@@ -43,9 +43,11 @@ Columns: SUM(Profit)
 Tooltip: 
 Annotations:
 
-* Total Profit
-** X% of profit in Y region
-
+* Trend - West has the highest profit ratio 3 of the 4 years
+* 2019 - West has the highest profit ratio
+* 2020 - Though East has the highest sales and profit, west leads the profit ratio
+* 2021 - Though West has the highest sales & profit, south leads the profit ratio
+* 2022 - West has the highest profit ratio
 
 Tooltip: Same for all charts 
 
@@ -65,8 +67,13 @@ Columns: SUM(Sales)
 Detail: Customer Name
 Color: Customer Name
 
-Annotations: Sales, Profit
+Annotations:
 
+* Trend - Majority of the customers are within 2K profit range
+* 2019 - Number 1 customer has negative profit ratio
+* 2020 - Number 1 customer has negative profit ratio
+* 2021 - Number 1 customer profit ratio jumped to 50%
+* 2022 - Number 1 customer profit ratio is similar to previous year
 
 Scene 3: Customer Ranking (Bar Chart)
 
