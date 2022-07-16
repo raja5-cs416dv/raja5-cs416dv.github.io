@@ -11,8 +11,6 @@ Filters:
 * Category
 
 
-Scene 1: Overview
-
 1.1 Count of Customers: (Bar chart)
 
 Table: Orders
@@ -58,8 +56,7 @@ Tooltip: Same for all charts
 * Profit Ratio
 
 
-
-Scene 2: Sales and Profit by Customer (Scatter Plot)
+1.4 Sales and profit by customer
 
 Table: Orders
 Rows: SUM(Profit)
@@ -69,19 +66,8 @@ Color: Customer Name
 
 Annotations:
 
-* Trend - Majority of the customers are within 2K profit range
+* Trend - Majority of the customers are within 2K profit and 4K sales
 * 2019 - Number 1 customer has negative profit ratio
 * 2020 - Number 1 customer has negative profit ratio
 * 2021 - Number 1 customer profit ratio jumped to 50%
 * 2022 - Number 1 customer profit ratio is similar to previous year
-
-Scene 3: Customer Ranking (Bar Chart)
-
-Table: Orders
-Rows: Customer Name
-Columns: SUM(Sales)
-Annotations: Sales, Profit
-
-
-
-

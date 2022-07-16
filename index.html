@@ -37,9 +37,29 @@
   </style>
 
   <body onload="init()">
+    <!-- Modal -->
+    <div id="modalDialog" class="w3-modal">
+      <div class="w3-modal-content w3-pale-green">
+        <div class="w3-container w3-center">
+          <p>Welcome to US Superstore - Customer Analysis</p>
+        </div>
+
+        <div class="w3-container w3-center">
+          <button
+            class="w3-button w3-light-blue"
+            onclick="document.getElementById('modalDialog').style.display='none'"
+          >
+            Get Started
+          </button>
+        </div>
+
+        <br />
+      </div>
+    </div>
+
     <div class="w3-row">
       <div class="w3-container w3-blue">
-        <h2>Superstore - Customer Analysis</h2>
+        <h3>US Superstore - Customer Analysis</h3>
       </div>
     </div>
 
@@ -309,7 +329,6 @@
           </header>
 
           <div class="w3-container">
-            <span name="NoData" />
             <div id="CountOfCustomersChartDiv">
               <svg id="CountOfCustomersChart"></svg>
             </div>
@@ -324,7 +343,6 @@
           </header>
 
           <div class="w3-container">
-            <span name="NoData" />
             <div id="SalesChartDiv">
               <svg id="SalesChart"></svg>
             </div>
@@ -339,7 +357,6 @@
           </header>
 
           <div class="w3-container">
-            <span name="NoData" />
             <div id="ProfitChartDiv">
               <svg id="ProfitChart"></svg>
             </div>
@@ -358,7 +375,6 @@
           </header>
 
           <div class="w3-container">
-            <span name="NoData" />
             <div id="SalesProfitByCustomerChartDiv">
               <svg id="SalesProfitByCustomerChart"></svg>
             </div>
@@ -382,11 +398,11 @@
     <script>
       let data = null;
       let selectedYear = null;
-      const uniqueCustomerIds = [];
-      let salesProfitByCustomer = {};
       const regions = ["West", "East", "Central", "South"];
       const selectedSegments = ["Consumer", "Corporate", "Home Office"];
       const selectedCategories = ["Furniture", "Office Supplies", "Technology"];
+      const salesProfitByCustomerCoordinates = [];
+      let topCustomerBySales = null;
 
       const chartData = {
         countOfCustomers: [],
@@ -395,6 +411,9 @@
         salesProfitByCustomerList: [],
       };
 
+      /////////////////////////////////////////////////////////////////////////
+      // Initialization and reload
+      /////////////////////////////////////////////////////////////////////////
       async function init() {
         yearPaginationAnnotations();
         segmentFilterAnnotations();
@@ -405,13 +424,17 @@
 
         window.addEventListener("resize", reload);
 
-        selectYear("2022");
+        selectYear("2019");
+        document.getElementById("modalDialog").style.display = "block";
+      }
+
+      function reload() {
+        processData();
+        updateCharts();
       }
 
       /////////////////////////////////////////////////////////////////////////
-      //
       // Annotations
-      //
       /////////////////////////////////////////////////////////////////////////
       function yearPaginationAnnotations() {
         const annotations = [
@@ -522,6 +545,7 @@
             y: 20,
             ny: height - 70,
             nx: 60,
+            className: "countOfCustomersChartAnnotationTrend",
           },
         ];
 
@@ -543,7 +567,7 @@
             note: {
               label:
                 "Though West region has highest sales, south region leads sales per customer",
-              title: "2019",
+              title: "Sales/Customer - 2019",
               align: "left",
               wrap: width * 0.9,
             },
@@ -560,7 +584,7 @@
             type: d3.annotationLabel,
             note: {
               label: "East region has the highest sales and sales per customer",
-              title: "2020",
+              title: "Sales/Customer - 2020",
               align: "left",
               wrap: width * 0.9,
             },
@@ -576,8 +600,9 @@
           {
             type: d3.annotationLabel,
             note: {
-              label: "Though West region has highest sales, east region leads sales per customer",
-              title: "2021",
+              label:
+                "Though West region has highest sales, east region leads sales per customer",
+              title: "Sales/Customer - 2021",
               align: "left",
               wrap: width * 0.9,
             },
@@ -594,7 +619,7 @@
             type: d3.annotationLabel,
             note: {
               label: "West region has the highest sales and sales per customer",
-              title: "2022",
+              title: "Sales/Customer - 2022",
               align: "left",
               wrap: width * 0.9,
             },
@@ -607,7 +632,6 @@
             nx: 60,
             className: "salesChartAnnotation2022",
           },
-
         ];
 
         d3.select(chartId)
@@ -626,9 +650,8 @@
           {
             type: d3.annotationLabel,
             note: {
-              label:
-                "West has the highest sales, profit and profit ratio",
-              title: "2019",
+              label: "West has the highest sales, profit and profit ratio",
+              title: "Profit Ratio - 2019",
               align: "left",
               wrap: width * 0.9,
             },
@@ -644,8 +667,9 @@
           {
             type: d3.annotationLabel,
             note: {
-              label: "Though East has the highest sales and profit, west leads the profit ratio",
-              title: "2020",
+              label:
+                "Though East has the highest sales and profit, west leads the profit ratio",
+              title: "Profit Ratio - 2020",
               align: "left",
               wrap: width * 0.9,
             },
@@ -661,8 +685,9 @@
           {
             type: d3.annotationLabel,
             note: {
-              label: "Though West has the highest sales & profit, south leads the profit ratio",
-              title: "2021",
+              label:
+                "Though West has the highest sales & profit, south leads the profit ratio",
+              title: "Profit Ratio - 2021",
               align: "left",
               wrap: width * 0.9,
             },
@@ -679,7 +704,7 @@
             type: d3.annotationLabel,
             note: {
               label: "West has the highest sales, profit and profit ratio",
-              title: "2022",
+              title: "Profit Ratio - 2022",
               align: "left",
               wrap: width * 0.9,
             },
@@ -692,7 +717,6 @@
             nx: 60,
             className: "profitChartAnnotation2022",
           },
-
         ];
 
         d3.select(chartId)
@@ -702,11 +726,89 @@
           .call(d3.annotation().annotations(annotations));
       }
 
-      function reload() {
-        processData();
-        updateCharts();
+      function salesProfitByCustomerAnnotations(chartId, chartDivId) {
+        const chartDiv = document.getElementById(chartDivId);
+        const width = chartDiv.clientWidth;
+        const height = chartDiv.clientHeight;
+
+        const annotations = [
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "Top customer (by sales) has a negative profit ratio",
+              title: "Profit Ratio - 2019",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: salesProfitByCustomerCoordinates[0],
+            y: salesProfitByCustomerCoordinates[1],
+            dy: -100,
+            dx: -35,
+            className: "salesProfitByCustomerAnnotation2019",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "Top customer (by sales) has a negative profit ratio",
+              title: "Profit Ratio - 2020",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: salesProfitByCustomerCoordinates[0],
+            y: salesProfitByCustomerCoordinates[1],
+            dy: -100,
+            dx: -35,
+            className: "salesProfitByCustomerAnnotation2020",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label: "Top customer (by sales) profit ratio jumped to 50%",
+              title: "Profit Ratio - 2021",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: salesProfitByCustomerCoordinates[0],
+            y: salesProfitByCustomerCoordinates[1],
+            dy: -50,
+            dx: -35,
+            className: "salesProfitByCustomerAnnotation2021",
+          },
+          {
+            type: d3.annotationLabel,
+            note: {
+              label:
+                "Top customer (by sales) profit ratio is similar to previous year",
+              title: "Profit Ratio - 2022",
+              wrap: width * 0.9,
+            },
+            connector: {
+              end: "arrow",
+            },
+            x: salesProfitByCustomerCoordinates[0],
+            y: salesProfitByCustomerCoordinates[1],
+            dy: -50,
+            dx: -35,
+            className: "salesProfitByCustomerAnnotation2022",
+          },
+        ];
+
+        d3.select(chartId)
+          .append("g")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
+          .call(d3.annotation().annotations(annotations));
       }
 
+      /////////////////////////////////////////////////////////////////////////
+      // Pagination and filters
+      /////////////////////////////////////////////////////////////////////////
       function selectYear(year) {
         d3.select("#pagination_prev")
           .selectAll("rect")
@@ -815,26 +917,9 @@
         reload();
       }
 
-      function currencyFormatter(val) {
-        const formatter = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          maximumFractionDigits: 0,
-        });
-
-        return formatter.format(val);
-      }
-
-      function formatAsPercent(val) {
-        const formatter = new Intl.NumberFormat("default", {
-          style: "percent",
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        });
-
-        return formatter.format(val);
-      }
-
+      /////////////////////////////////////////////////////////////////////////
+      // Tooltips
+      /////////////////////////////////////////////////////////////////////////
       function regionIndex(d, data) {
         for (let i = 0; i < 4; i++) {
           if (data[i] === d) {
@@ -941,104 +1026,18 @@
         return htmlStr;
       }
 
-      function updateCharts() {
-        d3.select("#CountOfCustomersChart").html("");
-        d3.select("#SalesChart").html("");
-        d3.select("#ProfitChart").html("");
-        d3.select("#SalesProfitByCustomerChart").html("");
-
-        // if (
-        //   chartData.countOfCustomers[0] === 0 &&
-        //   chartData.countOfCustomers[1] === 0 &&
-        //   chartData.countOfCustomers[2] === 0 &&
-        //   chartData.countOfCustomers[3] === 0
-        // ) {
-        //   const noDataElements = document.getElementsByName('NoData');
-        //   for ( let i = 0; i < noDataElements.length; i++ ) {
-        //     noDataElements[i].innerHTML = `
-        //     <div class="w3-panel w3-light-blue">
-        //       <p>No data</p>
-        //     </div> `;
-        //   }
-
-        //   return;
-        // } else {
-        //   d3.select("#NoData").html("");
-        // }
-
-        regionSummaryCharts(
-          "#CountOfCustomersChart",
-          "CountOfCustomersChartDiv",
-          chartData.countOfCustomers,
-          (d) => {
-            return d;
-          }
-        );
-
-        regionSummaryCharts(
-          "#SalesChart",
-          "SalesChartDiv",
-          chartData.sales,
-          (d) => {
-            return currencyFormatter(d);
-          }
-        );
-
-        regionSummaryCharts(
-          "#ProfitChart",
-          "ProfitChartDiv",
-          chartData.profit,
-          (d) => {
-            return currencyFormatter(d);
-          }
-        );
-
-        salesProfitByCustomerChart();
-        showHideAnnotationsForCharts();
-      }
-
-      function showHideAnnotationsForCharts() {
-        countOfCustomersChartAnnotations(
-          "#CountOfCustomersChart",
-          "CountOfCustomersChartDiv"
-        );
-
-        salesChartAnnotations("#SalesChart", "SalesChartDiv");
-        profitChartAnnotations("#ProfitChart", "ProfitChartDiv");
-
-        d3.select(".salesChartAnnotation2019").attr("opacity", 0);
-        d3.select(".salesChartAnnotation2020").attr("opacity", 0);
-        d3.select(".salesChartAnnotation2021").attr("opacity", 0);
-        d3.select(".salesChartAnnotation2022").attr("opacity", 0);
-
-        d3.select(".profitChartAnnotation2019").attr("opacity", 0);
-        d3.select(".profitChartAnnotation2020").attr("opacity", 0);
-        d3.select(".profitChartAnnotation2021").attr("opacity", 0);
-        d3.select(".profitChartAnnotation2022").attr("opacity", 0);
-
-
-        if (selectedYear === 2019) {
-          d3.select(".salesChartAnnotation2019").attr("opacity", 1);
-          d3.select(".profitChartAnnotation2019").attr("opacity", 1);
-        } else if (selectedYear === 2020) {
-          d3.select(".salesChartAnnotation2020").attr("opacity", 1);
-          d3.select(".profitChartAnnotation2020").attr("opacity", 1);
-        } else if (selectedYear === 2021) {
-          d3.select(".salesChartAnnotation2021").attr("opacity", 1);
-          d3.select(".profitChartAnnotation2021").attr("opacity", 1);
-        } else if (selectedYear === 2022) {
-          d3.select(".salesChartAnnotation2022").attr("opacity", 1);
-          d3.select(".profitChartAnnotation2022").attr("opacity", 1);
-        }
-      }
-
+      /////////////////////////////////////////////////////////////////////////
+      // Process data
+      /////////////////////////////////////////////////////////////////////////
       function processData() {
         console.log(
           `Year: ${selectedYear}, Segments: ${selectedSegments}, Categories: ${selectedCategories} `
         );
 
-        uniqueCustomerIds.length = 0;
-        salesProfitByCustomer = {};
+        topCustomerBySales = null;
+
+        const uniqueCustomerIds = [];
+        const salesProfitByCustomer = {};
 
         chartData.countOfCustomers.length = 0;
         chartData.sales.length = 0;
@@ -1059,6 +1058,8 @@
         let profitWest = 0;
         let profitCentral = 0;
         let profitEast = 0;
+
+        let maxSales = 0;
 
         data.forEach((e, i) => {
           const customerId = e["Customer ID"];
@@ -1092,13 +1093,6 @@
 
           if (!positiveProfit) {
             profit = -Math.abs(profit);
-          }
-
-          if (i === 0) {
-            console.log(e);
-            console.log(
-              `Order date: ${orderDate}: Order year: ${orderYear}, Selected year: ${selectedYear}, Sales: ${sales}, Profit: ${profit}, Region: ${region}`
-            );
           }
 
           if (orderYear !== selectedYear) {
@@ -1169,13 +1163,21 @@
           salesProfitByCustomerArray[0] = salesProfitByCustomerArray[0] + sales;
           salesProfitByCustomerArray[1] =
             salesProfitByCustomerArray[1] + profit;
-        });
+        }); // each
 
         for (const cname in salesProfitByCustomer) {
+          let tmpSales = salesProfitByCustomer[cname][0];
+          let tmpProfit = salesProfitByCustomer[cname][1];
+
+          if (tmpSales > maxSales) {
+            maxSales = tmpSales;
+            topCustomerBySales = cname;
+          }
+
           chartData.salesProfitByCustomerList.push({
             "Customer Name": cname,
-            Sales: salesProfitByCustomer[cname][0],
-            Profit: salesProfitByCustomer[cname][1],
+            Sales: tmpSales,
+            Profit: tmpProfit,
           });
         }
 
@@ -1194,7 +1196,119 @@
         chartData.profit.push(profitCentral);
         chartData.profit.push(profitSouth);
 
-        console.log(`Chart data: ${JSON.stringify(chartData)}`);
+        console.log(
+          `Chart data: countOfCustomers: ${chartData.countOfCustomers}, sales: ${chartData.sales}, profit: ${chartData.profit}, topCustomerBySales: ${topCustomerBySales}`
+        );
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      // Update and render chaarts
+      /////////////////////////////////////////////////////////////////////////
+      function updateCharts() {
+        d3.select("#CountOfCustomersChart").html("");
+        d3.select("#SalesChart").html("");
+        d3.select("#ProfitChart").html("");
+        d3.select("#SalesProfitByCustomerChart").html("");
+
+        regionSummaryCharts(
+          "#CountOfCustomersChart",
+          "CountOfCustomersChartDiv",
+          chartData.countOfCustomers,
+          (d) => {
+            return d;
+          }
+        );
+
+        regionSummaryCharts(
+          "#SalesChart",
+          "SalesChartDiv",
+          chartData.sales,
+          (d) => {
+            return currencyFormatter(d);
+          }
+        );
+
+        regionSummaryCharts(
+          "#ProfitChart",
+          "ProfitChartDiv",
+          chartData.profit,
+          (d) => {
+            return currencyFormatter(d);
+          }
+        );
+
+        salesProfitByCustomerChart(
+          "#SalesProfitByCustomerChart",
+          "SalesProfitByCustomerChartDiv"
+        );
+
+        showHideAnnotationsForCharts();
+      }
+
+      function showHideAnnotationsForCharts() {
+        countOfCustomersChartAnnotations(
+          "#CountOfCustomersChart",
+          "CountOfCustomersChartDiv"
+        );
+
+        salesChartAnnotations("#SalesChart", "SalesChartDiv");
+        profitChartAnnotations("#ProfitChart", "ProfitChartDiv");
+        salesProfitByCustomerAnnotations(
+          "#SalesProfitByCustomerChart",
+          "SalesProfitByCustomerChartDiv"
+        );
+
+        d3.select(".countOfCustomersChartAnnotationTrend").attr("opacity", 0);
+
+        d3.select(".salesChartAnnotation2019").attr("opacity", 0);
+        d3.select(".salesChartAnnotation2020").attr("opacity", 0);
+        d3.select(".salesChartAnnotation2021").attr("opacity", 0);
+        d3.select(".salesChartAnnotation2022").attr("opacity", 0);
+
+        d3.select(".profitChartAnnotation2019").attr("opacity", 0);
+        d3.select(".profitChartAnnotation2020").attr("opacity", 0);
+        d3.select(".profitChartAnnotation2021").attr("opacity", 0);
+        d3.select(".profitChartAnnotation2022").attr("opacity", 0);
+
+        d3.select(".salesProfitByCustomerAnnotation2019").attr("opacity", 0);
+        d3.select(".salesProfitByCustomerAnnotation2020").attr("opacity", 0);
+        d3.select(".salesProfitByCustomerAnnotation2021").attr("opacity", 0);
+        d3.select(".salesProfitByCustomerAnnotation2022").attr("opacity", 0);
+
+        // Don't show annotations when data is filtere
+        if (selectedSegments.length !== 3 || selectedCategories.length !== 3) {
+          return;
+        }
+
+        //Don't show annotations when there are no data
+        if (
+          chartData.countOfCustomers[0] === 0 &&
+          chartData.countOfCustomers[1] === 0 &&
+          chartData.countOfCustomers[2] === 0 &&
+          chartData.countOfCustomers[3] === 0
+        ) {
+          return;
+        }
+
+        d3.select(".countOfCustomersChartAnnotationTrend").attr("opacity", 1);
+
+        if (selectedYear === 2019) {
+          d3.select(".salesChartAnnotation2019").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2019").attr("opacity", 1);
+          d3.select(".salesProfitByCustomerAnnotation2019").attr("opacity", 1);
+        } else if (selectedYear === 2020) {
+          d3.select(".salesChartAnnotation2020").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2020").attr("opacity", 1);
+          d3.select(".salesProfitByCustomerAnnotation2020").attr("opacity", 1);
+        } else if (selectedYear === 2021) {
+          d3.select(".salesChartAnnotation2021").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2021").attr("opacity", 1);
+          d3.select(".salesProfitByCustomerAnnotation2021").attr("opacity", 1);
+        } else if (selectedYear === 2022) {
+          d3.select(".salesChartAnnotation2022").attr("opacity", 1);
+          d3.select(".profitChartAnnotation2022").attr("opacity", 1);
+          d3.select(".salesProfitByCustomerAnnotation2022").attr("opacity", 1);
+        }
       }
 
       function regionSummaryCharts(chartId, chartDivId, data, textFunc) {
@@ -1204,6 +1318,20 @@
         const height = 200;
 
         const svg = d3.select(chartId);
+
+        if (
+          chartData.countOfCustomers[0] === 0 &&
+          chartData.countOfCustomers[1] === 0 &&
+          chartData.countOfCustomers[2] === 0 &&
+          chartData.countOfCustomers[3] === 0
+        ) {
+          svg
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .text("No data");
+          return;
+        }
 
         svg.attr("width", width);
         svg.attr("height", height);
@@ -1336,15 +1464,27 @@
           .text(textFunc);
       }
 
-      function salesProfitByCustomerChart() {
-        const chartDiv = document.getElementById(
-          "SalesProfitByCustomerChartDiv"
-        );
+      function salesProfitByCustomerChart(chartId, chartDivId) {
+        const chartDiv = document.getElementById(chartDivId);
 
         const width = chartDiv.clientWidth;
         const height = 600;
 
-        const svg = d3.select("#SalesProfitByCustomerChart");
+        const svg = d3.select(chartId);
+
+        if (
+          chartData.countOfCustomers[0] === 0 &&
+          chartData.countOfCustomers[1] === 0 &&
+          chartData.countOfCustomers[2] === 0 &&
+          chartData.countOfCustomers[3] === 0
+        ) {
+          svg
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .text("No data");
+          return;
+        }
 
         svg.attr("width", width);
         svg.attr("height", height);
@@ -1455,6 +1595,8 @@
           .text("Profit");
 
         // Add dots
+        salesProfitByCustomerCoordinates.length = 0;
+
         g.selectAll("dot")
           .data(chartData.salesProfitByCustomerList)
           .enter()
@@ -1485,9 +1627,17 @@
               .attr("stroke-width", 1);
           })
           .transition()
-          .duration(2000)
+          .duration(1000)
           .attr("cx", function (d) {
-            return x(d.Sales);
+            const xCordinates = x(d.Sales);
+            const yCordinates = y(d.Profit);
+
+            if (d["Customer Name"] === topCustomerBySales) {
+              salesProfitByCustomerCoordinates.push(xCordinates + margin.left);
+              salesProfitByCustomerCoordinates.push(yCordinates + margin.top);
+            }
+
+            return xCordinates;
           })
           .attr("r", function (d) {
             return 10;
@@ -1540,6 +1690,35 @@
           .attr("font-family", "sans-serif")
           .attr("font-size", "12px")
           .text("50%");
+
+        console.log(
+          `salesProfitByCustomerCoordinates: ${JSON.stringify(
+            salesProfitByCustomerCoordinates
+          )}`
+        );
+      }
+
+      /////////////////////////////////////////////////////////////////////////
+      // Helper functions
+      /////////////////////////////////////////////////////////////////////////
+      function currencyFormatter(val) {
+        const formatter = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        });
+
+        return formatter.format(val);
+      }
+
+      function formatAsPercent(val) {
+        const formatter = new Intl.NumberFormat("default", {
+          style: "percent",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+        return formatter.format(val);
       }
     </script>
   </body>
