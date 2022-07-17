@@ -37,26 +37,6 @@
   </style>
 
   <body onload="init()">
-    <!-- Modal -->
-    <div id="modalDialog" class="w3-modal">
-      <div class="w3-modal-content w3-pale-green">
-        <div class="w3-container w3-center">
-          <p>Welcome to US Superstore - Customer Analysis</p>
-        </div>
-
-        <div class="w3-container w3-center">
-          <button
-            class="w3-button w3-light-blue"
-            onclick="document.getElementById('modalDialog').style.display='none'"
-          >
-            Get Started
-          </button>
-        </div>
-
-        <br />
-      </div>
-    </div>
-
     <div class="w3-row">
       <div class="w3-container w3-blue">
         <h3>US Superstore - Customer Analysis</h3>
@@ -425,7 +405,6 @@
         window.addEventListener("resize", reload);
 
         selectYear("2019");
-        document.getElementById("modalDialog").style.display = "block";
       }
 
       function reload() {
