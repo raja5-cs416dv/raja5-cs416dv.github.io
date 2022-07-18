@@ -1,10 +1,51 @@
 <html>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.5.1/d3-annotation.min.js"></script>
 
   <style>
+    body {
+      margin: 0;
+    }
+
+    .header {
+      background-color: #f1f1f1;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .footer {
+      background-color: #f1f1f1;
+      text-align: center;
+      padding: 5px;
+    }
+
+    /* Create three equal columns that float next to each other */
+    .column {
+      float: left;
+      width: 33.33%;
+    }
+
+    /* Create one column */
+    .column-full {
+      float: left;
+      width: 100%;
+    }
+
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    /* Responsive layout - makes the columns stack on top of each other instead of next to each other on smaller screens  */
+    @media screen and (max-width: 1080px) {
+      .column {
+        width: 100%;
+      }
+    }
+
     .tooltip {
       position: absolute;
       text-align: left;
@@ -37,19 +78,16 @@
   </style>
 
   <body onload="init()">
-    <div class="w3-row">
-      <div class="w3-container w3-blue">
-        <h3>US Superstore - Customer Analysis</h3>
-      </div>
+    <div class="header">
+      <h1>US Superstore - Customer Analysis</h1>
     </div>
 
     <br />
 
-    <div class="w3-row">
-      <div class="w3-third w3-container">
-        <div class="w3-card-4">
-          <svg id="year-pagination" width="400" height="100">
-            <!-- <rect
+    <div class="row">
+      <div class="column">
+        <svg id="year-pagination" width="400" height="100">
+          <!-- <rect
               height="100"
               width="400"
               x="0"
@@ -58,321 +96,286 @@
               fill="none"
             /> -->
 
-            <g
-              id="pagination_prev"
-              transform="translate(10,5)"
-              onclick="selectYear('prev')"
-            >
-              <text x="20" y="20" fill="black">&laquo;</text>
-              <rect
-                x="0"
-                y="0"
-                width="50"
-                height="30"
-                fill="lightgrey"
-                style="opacity: 0.5"
-              ></rect>
-            </g>
-
-            <g
-              id="pagination_2019"
-              transform="translate(10,5)"
-              onclick="selectYear('2019')"
-            >
-              <text
-                x="67"
-                y="20"
-                fill="black"
-                style="font-size: 15px; font-family: sans-serif"
-              >
-                2019
-              </text>
-              <rect
-                x="60"
-                y="0"
-                width="50"
-                height="30"
-                fill="lightgrey"
-                style="opacity: 0.5"
-              ></rect>
-            </g>
-
-            <g
-              id="pagination_2020"
-              transform="translate(10,5)"
-              onclick="selectYear('2020')"
-            >
-              <text
-                x="130"
-                y="20"
-                fill="black"
-                style="font-size: 15px; font-family: sans-serif"
-              >
-                2020
-              </text>
-
-              <rect
-                x="120"
-                y="0"
-                width="50"
-                height="30"
-                fill="lightgrey"
-                style="opacity: 0.5"
-              ></rect>
-            </g>
-
-            <g
-              id="pagination_2021"
-              transform="translate(10,5)"
-              onclick="selectYear('2021')"
-            >
-              <text
-                x="190"
-                y="20"
-                fill="black"
-                style="font-size: 15px; font-family: sans-serif"
-              >
-                2021
-              </text>
-
-              <rect
-                x="180"
-                y="0"
-                width="50"
-                height="30"
-                fill="lightgrey"
-                style="opacity: 0.5"
-              ></rect>
-            </g>
-
-            <g
-              id="pagination_2022"
-              transform="translate(10,5)"
-              onclick="selectYear('2022')"
-            >
-              <text
-                x="248"
-                y="20"
-                fill="black"
-                style="font-size: 15px; font-family: sans-serif"
-              >
-                2022
-              </text>
-
-              <rect
-                x="240"
-                y="0"
-                width="50"
-                height="30"
-                fill="lightgrey"
-                style="opacity: 0.5"
-              ></rect>
-            </g>
-
-            <g
-              id="pagination_next"
-              transform="translate(10,5)"
-              onclick="selectYear('next')"
-            >
-              <text x="320" y="20" fill="black">&raquo;</text>
-              <rect
-                x="300"
-                y="0"
-                width="50"
-                height="30"
-                fill="lightgrey"
-                style="opacity: 0.5"
-              ></rect>
-            </g>
-          </svg>
-        </div>
-      </div>
-
-      <div class="w3-third w3-container">
-        <div class="w3-card-4">
-          <svg id="segment-filter" width="400" height="100">
-            <!-- <rect
-              height="100"
-              width="400"
-              x="0"
-              y="0"
-              stroke="#000"
-              fill="none"
-            /> -->
-            <foreignObject x="10" y="15" width="400" height="100">
-              <input
-                type="checkbox"
-                id="segment_consumer"
-                value="Consumer"
-                checked="true"
-                onclick="selectSegments('segment_consumer')"
-              />
-              <label
-                for="segment_consumer"
-                style="font-size: 14px; font-family: sans-serif"
-                >Consumer</label
-              ><br />
-
-              <input
-                type="checkbox"
-                id="segment_corporate"
-                value="Corporate"
-                checked="true"
-                onclick="selectSegments('segment_corporate')"
-              />
-              <label
-                for="segment_corporate"
-                style="font-size: 14px; font-family: sans-serif"
-                >Corporate</label
-              ><br />
-
-              <input
-                type="checkbox"
-                id="segment_home_office"
-                value="Home Office"
-                checked="true"
-                onclick="selectSegments('segment_home_office')"
-              />
-              <label
-                for="segment_home_office"
-                style="font-size: 14px; font-family: sans-serif"
-                >Home Office</label
-              ><br />
-            </foreignObject>
-          </svg>
-        </div>
-      </div>
-
-      <div class="w3-third w3-container">
-        <div class="w3-card-4">
-          <svg id="category-filter" width="400" height="100">
-            <!-- <rect
-              height="100"
-              width="400"
-              x="0"
-              y="0"
-              stroke="#000"
-              fill="none"
-            /> -->
-            <foreignObject x="10" y="15" width="400" height="100">
-              <input
-                type="checkbox"
-                id="category_furniture"
-                value="Furniture"
-                checked="true"
-                onclick="selectCategories('category_furniture')"
-              />
-              <label
-                for="category_furniture"
-                style="font-size: 14px; font-family: sans-serif"
-                >Furniture</label
-              ><br />
-
-              <input
-                type="checkbox"
-                id="category_office_supplies"
-                value="Office Supplies"
-                checked="true"
-                onclick="selectCategories('category_office_supplies')"
-              />
-              <label
-                for="category_office_supplies"
-                style="font-size: 14px; font-family: sans-serif"
-                >Office Supplies</label
-              ><br />
-
-              <input
-                type="checkbox"
-                id="category_technology"
-                value="Technology"
-                checked="true"
-                onclick="selectCategories('category_technology')"
-              />
-              <label
-                for="category_technology"
-                style="font-size: 14px; font-family: sans-serif"
-                >Technology</label
-              ><br />
-            </foreignObject>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <br />
-
-    <div class="w3-row">
-      <div class="w3-third w3-container">
-        <div class="w3-card-4">
-          <header class="w3-container w3-teal">
-            <h6>Count of Customers</h6>
-          </header>
-
-          <div class="w3-container">
-            <div id="CountOfCustomersChartDiv">
-              <svg id="CountOfCustomersChart"></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="w3-third w3-container">
-        <div class="w3-card-4">
-          <header class="w3-container w3-teal">
-            <h6>Sales</h6>
-          </header>
-
-          <div class="w3-container">
-            <div id="SalesChartDiv">
-              <svg id="SalesChart"></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="w3-third w3-container">
-        <div class="w3-card-4">
-          <header class="w3-container w3-teal">
-            <h6>Profit</h6>
-          </header>
-
-          <div class="w3-container">
-            <div id="ProfitChartDiv">
-              <svg id="ProfitChart"></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <br />
-
-    <div class="w3-row">
-      <div class="w3-container">
-        <div class="w3-card-4">
-          <header class="w3-container w3-teal">
-            <h6>Sales and Profit By Customer</h6>
-          </header>
-
-          <div class="w3-container">
-            <div id="SalesProfitByCustomerChartDiv">
-              <svg id="SalesProfitByCustomerChart"></svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <br />
-
-    <div class="w3-row">
-      <div class="w3-container w3-light-grey">
-        <div class="w3-panel">
-          <a href="https://github.com/raja5-cs416dv/raja5-cs416dv.github.io"
-            >Repository</a
+          <g
+            id="pagination_prev"
+            transform="translate(10,5)"
+            onclick="selectYear('prev')"
           >
+            <text x="20" y="20" fill="black">&laquo;</text>
+            <rect
+              x="0"
+              y="0"
+              width="50"
+              height="30"
+              fill="lightgrey"
+              style="opacity: 0.5"
+            ></rect>
+          </g>
+
+          <g
+            id="pagination_2019"
+            transform="translate(10,5)"
+            onclick="selectYear('2019')"
+          >
+            <text
+              x="67"
+              y="20"
+              fill="black"
+              style="font-size: 15px; font-family: sans-serif"
+            >
+              2019
+            </text>
+            <rect
+              x="60"
+              y="0"
+              width="50"
+              height="30"
+              fill="lightgrey"
+              style="opacity: 0.5"
+            ></rect>
+          </g>
+
+          <g
+            id="pagination_2020"
+            transform="translate(10,5)"
+            onclick="selectYear('2020')"
+          >
+            <text
+              x="130"
+              y="20"
+              fill="black"
+              style="font-size: 15px; font-family: sans-serif"
+            >
+              2020
+            </text>
+
+            <rect
+              x="120"
+              y="0"
+              width="50"
+              height="30"
+              fill="lightgrey"
+              style="opacity: 0.5"
+            ></rect>
+          </g>
+
+          <g
+            id="pagination_2021"
+            transform="translate(10,5)"
+            onclick="selectYear('2021')"
+          >
+            <text
+              x="190"
+              y="20"
+              fill="black"
+              style="font-size: 15px; font-family: sans-serif"
+            >
+              2021
+            </text>
+
+            <rect
+              x="180"
+              y="0"
+              width="50"
+              height="30"
+              fill="lightgrey"
+              style="opacity: 0.5"
+            ></rect>
+          </g>
+
+          <g
+            id="pagination_2022"
+            transform="translate(10,5)"
+            onclick="selectYear('2022')"
+          >
+            <text
+              x="248"
+              y="20"
+              fill="black"
+              style="font-size: 15px; font-family: sans-serif"
+            >
+              2022
+            </text>
+
+            <rect
+              x="240"
+              y="0"
+              width="50"
+              height="30"
+              fill="lightgrey"
+              style="opacity: 0.5"
+            ></rect>
+          </g>
+
+          <g
+            id="pagination_next"
+            transform="translate(10,5)"
+            onclick="selectYear('next')"
+          >
+            <text x="320" y="20" fill="black">&raquo;</text>
+            <rect
+              x="300"
+              y="0"
+              width="50"
+              height="30"
+              fill="lightgrey"
+              style="opacity: 0.5"
+            ></rect>
+          </g>
+        </svg>
+      </div>
+
+      <div class="column">
+        <svg id="segment-filter" width="400" height="100">
+          <!-- <rect
+              height="100"
+              width="400"
+              x="0"
+              y="0"
+              stroke="#000"
+              fill="none"
+            /> -->
+          <foreignObject x="10" y="15" width="400" height="100">
+            <input
+              type="checkbox"
+              id="segment_consumer"
+              value="Consumer"
+              checked="true"
+              onclick="selectSegments('segment_consumer')"
+            />
+            <label
+              for="segment_consumer"
+              style="font-size: 14px; font-family: sans-serif"
+              >Consumer</label
+            ><br />
+
+            <input
+              type="checkbox"
+              id="segment_corporate"
+              value="Corporate"
+              checked="true"
+              onclick="selectSegments('segment_corporate')"
+            />
+            <label
+              for="segment_corporate"
+              style="font-size: 14px; font-family: sans-serif"
+              >Corporate</label
+            ><br />
+
+            <input
+              type="checkbox"
+              id="segment_home_office"
+              value="Home Office"
+              checked="true"
+              onclick="selectSegments('segment_home_office')"
+            />
+            <label
+              for="segment_home_office"
+              style="font-size: 14px; font-family: sans-serif"
+              >Home Office</label
+            ><br />
+          </foreignObject>
+        </svg>
+      </div>
+
+      <div class="column">
+        <svg id="category-filter" width="400" height="100">
+          <!-- <rect
+              height="100"
+              width="400"
+              x="0"
+              y="0"
+              stroke="#000"
+              fill="none"
+            /> -->
+          <foreignObject x="10" y="15" width="400" height="100">
+            <input
+              type="checkbox"
+              id="category_furniture"
+              value="Furniture"
+              checked="true"
+              onclick="selectCategories('category_furniture')"
+            />
+            <label
+              for="category_furniture"
+              style="font-size: 14px; font-family: sans-serif"
+              >Furniture</label
+            ><br />
+
+            <input
+              type="checkbox"
+              id="category_office_supplies"
+              value="Office Supplies"
+              checked="true"
+              onclick="selectCategories('category_office_supplies')"
+            />
+            <label
+              for="category_office_supplies"
+              style="font-size: 14px; font-family: sans-serif"
+              >Office Supplies</label
+            ><br />
+
+            <input
+              type="checkbox"
+              id="category_technology"
+              value="Technology"
+              checked="true"
+              onclick="selectCategories('category_technology')"
+            />
+            <label
+              for="category_technology"
+              style="font-size: 14px; font-family: sans-serif"
+              >Technology</label
+            ><br />
+          </foreignObject>
+        </svg>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+      <div class="column">
+        <h3 style="margin-left: 10px">Count of Customers</h3>
+
+        <div id="CountOfCustomersChartDiv">
+          <svg id="CountOfCustomersChart"></svg>
         </div>
       </div>
+
+      <div class="column">
+        <h3 style="margin-left: 10px">Sales</h3>
+
+        <div id="SalesChartDiv">
+          <svg id="SalesChart"></svg>
+        </div>
+      </div>
+
+      <div class="column">
+        <h3 style="margin-left: 10px">Profit</h3>
+
+        <div id="ProfitChartDiv">
+          <svg id="ProfitChart"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="column-full">
+        <h3 style="margin-left: 10px">Sales and Profit By Customer</h3>
+
+        <div id="SalesProfitByCustomerChartDiv">
+          <svg id="SalesProfitByCustomerChart"></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>
+        <a href="https://github.com/raja5-cs416dv/raja5-cs416dv.github.io"
+          >Repository</a
+        >
+      </p>
     </div>
 
     <script>
@@ -721,8 +724,8 @@
             connector: {
               end: "arrow",
             },
-            x: salesProfitByCustomerCoordinates[0],
-            y: salesProfitByCustomerCoordinates[1],
+            x: salesProfitByCustomerCoordinates[0] - 5,
+            y: salesProfitByCustomerCoordinates[1] - 15,
             dy: -100,
             dx: -35,
             className: "salesProfitByCustomerAnnotation2019",
@@ -737,8 +740,8 @@
             connector: {
               end: "arrow",
             },
-            x: salesProfitByCustomerCoordinates[0],
-            y: salesProfitByCustomerCoordinates[1],
+            x: salesProfitByCustomerCoordinates[0] - 5,
+            y: salesProfitByCustomerCoordinates[1] - 15,
             dy: -100,
             dx: -35,
             className: "salesProfitByCustomerAnnotation2020",
@@ -753,8 +756,8 @@
             connector: {
               end: "arrow",
             },
-            x: salesProfitByCustomerCoordinates[0],
-            y: salesProfitByCustomerCoordinates[1],
+            x: salesProfitByCustomerCoordinates[0] - 5,
+            y: salesProfitByCustomerCoordinates[1] - 15,
             dy: -50,
             dx: -35,
             className: "salesProfitByCustomerAnnotation2021",
@@ -770,8 +773,8 @@
             connector: {
               end: "arrow",
             },
-            x: salesProfitByCustomerCoordinates[0],
-            y: salesProfitByCustomerCoordinates[1],
+            x: salesProfitByCustomerCoordinates[0] - 5,
+            y: salesProfitByCustomerCoordinates[1] - 15,
             dy: -50,
             dx: -35,
             className: "salesProfitByCustomerAnnotation2022",
