@@ -336,25 +336,22 @@
 
     <div class="row">
       <div class="column">
-        <h3 style="margin-left: 10px">Count of Customers</h3>
-
-        <div id="CountOfCustomersChartDiv">
+        <div
+          style="margin-left: 10px; margin-right: 10px"
+          id="CountOfCustomersChartDiv"
+        >
           <svg id="CountOfCustomersChart"></svg>
         </div>
       </div>
 
       <div class="column">
-        <h3 style="margin-left: 10px">Sales</h3>
-
-        <div id="SalesChartDiv">
+        <div style="margin-right: 10px" id="SalesChartDiv">
           <svg id="SalesChart"></svg>
         </div>
       </div>
 
       <div class="column">
-        <h3 style="margin-left: 10px">Profit</h3>
-
-        <div id="ProfitChartDiv">
+        <div style="margin-right: 10px" id="ProfitChartDiv">
           <svg id="ProfitChart"></svg>
         </div>
       </div>
@@ -362,9 +359,7 @@
 
     <div class="row">
       <div class="column-full">
-        <h3 style="margin-left: 10px">Sales and Profit By Customer</h3>
-
-        <div id="SalesProfitByCustomerChartDiv">
+        <div style="margin: 10px" id="SalesProfitByCustomerChartDiv">
           <svg id="SalesProfitByCustomerChart"></svg>
         </div>
       </div>
@@ -524,7 +519,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 20,
+            y: 60,
             ny: height - 70,
             nx: 60,
             className: "countOfCustomersChartAnnotationTrend",
@@ -557,7 +552,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 100,
+            y: 115,
             ny: height - 70,
             dx: -5,
             className: "salesChartAnnotation2019",
@@ -574,7 +569,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 40,
+            y: 75,
             ny: height - 70,
             nx: 60,
             className: "salesChartAnnotation2020",
@@ -592,7 +587,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 40,
+            y: 75,
             ny: height - 70,
             nx: 60,
             className: "salesChartAnnotation2021",
@@ -609,7 +604,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 20,
+            y: 60,
             ny: height - 70,
             nx: 60,
             className: "salesChartAnnotation2022",
@@ -641,7 +636,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 20,
+            y: 60,
             ny: height - 70,
             dx: -5,
             className: "profitChartAnnotation2019",
@@ -659,7 +654,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 20,
+            y: 60,
             ny: height - 70,
             nx: 60,
             className: "profitChartAnnotation2020",
@@ -677,7 +672,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 100,
+            y: 115,
             ny: height - 70,
             nx: 60,
             className: "profitChartAnnotation2021",
@@ -694,7 +689,7 @@
               end: "arrow",
             },
             x: 70,
-            y: 20,
+            y: 60,
             ny: height - 70,
             nx: 60,
             className: "profitChartAnnotation2022",
@@ -1195,6 +1190,7 @@
         regionSummaryCharts(
           "#CountOfCustomersChart",
           "CountOfCustomersChartDiv",
+          "Count of Customers",
           chartData.countOfCustomers,
           (d) => {
             return d;
@@ -1204,6 +1200,7 @@
         regionSummaryCharts(
           "#SalesChart",
           "SalesChartDiv",
+          "Sales",
           chartData.sales,
           (d) => {
             return currencyFormatter(d);
@@ -1213,6 +1210,7 @@
         regionSummaryCharts(
           "#ProfitChart",
           "ProfitChartDiv",
+          "Profit",
           chartData.profit,
           (d) => {
             return currencyFormatter(d);
@@ -1293,13 +1291,35 @@
         }
       }
 
-      function regionSummaryCharts(chartId, chartDivId, data, textFunc) {
+      function regionSummaryCharts(chartId, chartDivId, title, data, textFunc) {
         const chartDiv = document.getElementById(chartDivId);
 
         const width = chartDiv.clientWidth;
-        const height = 200;
+        const height = 225;
 
         const svg = d3.select(chartId);
+
+        svg.attr("width", width);
+        svg.attr("height", height);
+
+        svg
+          .append("text")
+          .attr("x", 10)
+          .attr("y", 25)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "16px")
+          .attr("fill", "grey")
+          .attr("font-weight", "bold")
+          .text(title);
+
+        const documentOutline = svg
+          .append("rect")
+          .attr("height", height)
+          .attr("width", width)
+          .attr("x", 0)
+          .attr("y", 0)
+          .style("stroke", "#000")
+          .style("fill", "none");
 
         if (
           chartData.countOfCustomers[0] === 0 &&
@@ -1315,19 +1335,7 @@
           return;
         }
 
-        svg.attr("width", width);
-        svg.attr("height", height);
-
-        const documentOutline = svg
-          .append("rect")
-          .attr("height", height)
-          .attr("width", width)
-          .attr("x", 0)
-          .attr("y", 0)
-          .style("stroke", "#000")
-          .style("fill", "none");
-
-        const margin = { top: 10, right: 100, bottom: 100, left: 50 };
+        const margin = { top: 50, right: 100, bottom: 100, left: 50 };
         const plotHeight = height - margin.top - margin.bottom;
         const plotWidth = width - margin.left - margin.right;
 
@@ -1366,7 +1374,7 @@
           .style("fill", "#000")
           .style("stroke", "none");
 
-        documentOutline.remove();
+        //documentOutline.remove();
         plotOutline.remove();
         //y.call((g) => g.select(".domain").remove());
 
@@ -1426,7 +1434,7 @@
           .enter()
           .append("text")
           .attr("y", function (d, i) {
-            return y(regions[i]) + 15;
+            return y(regions[i]) + 53;
           })
           .attr("dy", ".75em")
           .attr("font-family", "sans-serif")
@@ -1454,6 +1462,28 @@
 
         const svg = d3.select(chartId);
 
+        svg.attr("width", width);
+        svg.attr("height", height);
+
+        svg
+          .append("text")
+          .attr("x", 10)
+          .attr("y", 25)
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "16px")
+          .attr("font-weight", "bold")
+          .attr("fill", "grey")
+          .text("Sales and Profit By Customer");
+
+        const documentOutline = svg
+          .append("rect")
+          .attr("height", height)
+          .attr("width", width)
+          .attr("x", 0)
+          .attr("y", 0)
+          .style("stroke", "#000")
+          .style("fill", "none");
+
         if (
           chartData.countOfCustomers[0] === 0 &&
           chartData.countOfCustomers[1] === 0 &&
@@ -1467,18 +1497,6 @@
             .text("No data");
           return;
         }
-
-        svg.attr("width", width);
-        svg.attr("height", height);
-
-        const documentOutline = svg
-          .append("rect")
-          .attr("height", height)
-          .attr("width", width)
-          .attr("x", 0)
-          .attr("y", 0)
-          .style("stroke", "#000")
-          .style("fill", "none");
 
         const margin = { top: 50, right: 150, bottom: 50, left: 80 };
         const plotHeight = height - margin.top - margin.bottom;
@@ -1532,7 +1550,7 @@
           ])
           .range(["red", "lightgreen"]);
 
-        documentOutline.remove();
+        //documentOutline.remove();
         plotOutline.remove();
 
         // Add tooltip
